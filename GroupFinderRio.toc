@@ -1,0 +1,14 @@
+## Interface: 110000
+## Title: GroupFinderRio
+## Version: @project-version@
+## Notes: Adds Rio score to the group finder and allows for sorting
+## Author: Jods
+## X-Curse-Project-ID: 
+## X-Wago-ID:  
+## X-WoWI-ID: 
+## RequiredDeps: RaiderIO
+
+#Libs
+embeds.xml
+
+GroupFinderRio.lua
