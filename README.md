@@ -2,8 +2,8 @@
 [![PayPal][SVG-PayPal]][PayPal]
 [![Release][SVG-Release]][Release]
 [![CustomNames][SVG-CustomNames]][CustomNames]  
-# CustomNames
-Adds Rio Score displaz to the GroupFinder frame
+# GroupFinderRIO
+Adds Rio Score display to the GroupFinder frame
 
 [//]: # (Links)
 
