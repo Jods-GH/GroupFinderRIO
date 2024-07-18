@@ -1,4 +1,4 @@
 package-as: GroupFinderRio
 
 externals:
-    Libs/LibTranslit: https://github.com/Vardex/LibTranslit
+    
