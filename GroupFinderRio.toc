@@ -3,9 +3,8 @@
 ## Version: @project-version@
 ## Notes: Adds Rio score to the group finder and allows for sorting
 ## Author: Jods
-## X-Curse-Project-ID: 
-## X-Wago-ID:  
-## X-WoWI-ID: 
+## X-Curse-Project-ID: 1066197
+## X-Wago-ID: 56n9wjN9
 ## RequiredDeps: RaiderIO
 
 #Libs
