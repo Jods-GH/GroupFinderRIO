@@ -1,22 +1,26 @@
 local function getScoreForRioProfile(profile)
     if (profile.mythicKeystoneProfile.mainCurrentScore and profile.mythicKeystoneProfile.mainCurrentScore>0) and profile.mythicKeystoneProfile.mainCurrentScore> profile.mythicKeystoneProfile.currentScore then
-     return profile.mythicKeystoneProfile.mainCurrentScore
+     return profile.mythicKeystoneProfile.mainCurrentScore, profile.mythicKeystoneProfile.currentScore
     end   
-    return profile.mythicKeystoneProfile.currentScore
+    return nil, profile.mythicKeystoneProfile.currentScore
 end
 
 local function getScoreForLeader(searchResult)
     local leaderName = searchResult.leaderName
+    if not leaderName and searchResult.leaderOverallDungeonScore and not searchResult.isDelisted then 
+        return nil, searchResult.leaderOverallDungeonScore 
+    elseif not leaderName or searchResult.isDelisted then 
+        return nil, 0
+    end
     local leaderFullName = leaderName:find("-")~=nil and leaderName or leaderName.."-"..GetNormalizedRealmName()
     local faction = searchResult.leaderFactionGroup
-    local score = 0
     if RaiderIO.GetProfile(leaderFullName,faction) then
         local profile = RaiderIO.GetProfile(leaderFullName,faction)
-        score = getScoreForRioProfile(profile) or 0
+        local mainScore, score = getScoreForRioProfile(profile)
+        return  mainScore or 0, score or 0
     else
-        score = searchResult.leaderOverallDungeonScore or 0 
+        return nil, searchResult.leaderOverallDungeonScore or 0
     end
-    return score
 end
 
 local function colorScore(score)
@@ -31,18 +35,30 @@ end
 local function updateLfgListEntry(entry, ...)
     local searchResultID = entry.GetData().resultID
     local searchResult = C_LFGList.GetSearchResultInfo(searchResultID)
-    if (not LFGListFrame.SearchPanel:IsShown() or searchResult.categoryID ~= DUNGEON_CATEGORY_ID or not searchResult.leaderName) then
+    local activityInfoTable = C_LFGList.GetActivityInfoTable(searchResult.activityID)
+    if (not LFGListFrame.SearchPanel:IsShown() or activityInfoTable.categoryID ~= GROUP_FINDER_CATEGORY_ID_DUNGEONS or not searchResult.leaderName) then
         return
     end
-    local score = getScoreForLeader(searchResult)
+    local mainScore,score = getScoreForLeader(searchResult)
+    if mainScore and mainScore>score then
+        entry.Name:SetText("["..colorScore(mainScore).."]"..colorScore(score) .. "   -    ".. entry.Name:GetText())
+    end
     entry.Name:SetText(colorScore(score) .. "   -    ".. entry.Name:GetText())
 end
 local function compareSearchEntries(a,b)
-    return getScoreForLeader(C_LFGList.GetSearchResultInfo(a)) > getScoreForLeader(C_LFGList.GetSearchResultInfo(b))
+    local mainScoreA, scoreA = getScoreForLeader(C_LFGList.GetSearchResultInfo(a))
+    if mainScoreA and (not scoreA or mainScoreA>scoreA) then
+        scoreA = mainScoreA
+    end
+    local mainScoreB, scoreB = getScoreForLeader(C_LFGList.GetSearchResultInfo(b))
+    if mainScoreB and (not scoreB or  mainScoreB>scoreB) then
+        scoreB = mainScoreB
+    end
+    return scoreA > scoreB
 end
-local DUNGEON_CATEGORY_ID = 2
+
 local function sortSearchResults(results)
-    if (not LFGListFrame.SearchPanel:IsShown()) or results.categoryID ~= DUNGEON_CATEGORY_ID then
+    if (not LFGListFrame.SearchPanel:IsShown()) or results.categoryID ~= GROUP_FINDER_CATEGORY_ID_DUNGEONS then
         return
     end
     table.sort(results.results , compareSearchEntries)
@@ -50,30 +66,36 @@ end
 
 local function getScoreForApplicant(applicantID, numMember)
     local name, _, _, _, itemLevel, _, _, _, _, _, _, dungeonScore, _ = C_LFGList.GetApplicantMemberInfo(applicantID, numMember)
-    local score = 0
     itemLevel = itemLevel or 0
-    if RaiderIO.GetProfile(name,1) then
+    if RaiderIO.GetProfile(name,1) then -- check if you can somehow get faction of an application
         local profile = RaiderIO.GetProfile(name,1)
-        score = getScoreForRioProfile(profile) or 0
+        local mainScore, score = getScoreForRioProfile(profile)
+        return mainScore, score or 0, itemLevel
     elseif RaiderIO.GetProfile(name,2) then
         local profile = RaiderIO.GetProfile(name,2)
-        score = getScoreForRioProfile(profile) or 0
+        local mainScore, score = getScoreForRioProfile(profile)
+        return mainScore, score or 0, itemLevel 
     else
-        score = dungeonScore or 0 
+        return nil, dungeonScore or 0, itemLevel
     end
-    return score, itemLevel
 end
 
 local function getScoreForApplication(applicationID)
+    -- we are calculating the average score and ilvl of a group to sort by
     local applicantInfo = C_LFGList.GetApplicantInfo(applicationID)
     local score = 0
     local ilvl = 0
     for i= 0,applicantInfo.numMembers do 
-        local applicantScore, applicantIlvl = getScoreForApplicant(applicationID,i)
-        score = score + applicantScore
+        local applicantMainScore, applicantScore, applicantIlvl = getScoreForApplicant(applicationID,i)
+        if applicantMainScore then
+            score = score + applicantMainScore
+        else
+            score = score + applicantScore
+        end
         ilvl = ilvl + applicantIlvl
     end 
     score = score/applicantInfo.numMembers
+    ilvl = ilvl/applicantInfo.numMembers
     return score, ilvl
 end
 
@@ -91,11 +113,56 @@ local function sortApplications(applicants)
     end
     table.sort(applicants, compareApplicants)
 end
+local groupFinderRioRatingInfoFrames = {}
+local function getRatingInfoFrame(searchResult)
+    if groupFinderRioRatingInfoFrames[searchResult] then
+        return groupFinderRioRatingInfoFrames[searchResult]
+    else
+        local ratingInfoFrame = CreateFrame("Frame")
+        ratingInfoFrame:SetFrameStrata("HIGH")
+        ratingInfoFrame:SetSize(20,20)
+        ratingInfoFrame:SetPoint("TOP")
 
+        ratingInfoFrame.Rating = ratingInfoFrame:CreateFontString("ratingString", "ARTWORK", "GameFontNormalSmall")
+        ratingInfoFrame.Rating:SetSize(35,10)
+        ratingInfoFrame.Rating:SetPoint("CENTER",ratingInfoFrame,"CENTER")
+        ratingInfoFrame.Rating:SetJustifyH("RIGHT")
+
+        ratingInfoFrame.Note = ratingInfoFrame:CreateTexture("noteimage", "ARTWORK")
+        ratingInfoFrame.Note:SetAtlas("transmog-icon-chat")
+        ratingInfoFrame.Note:SetSize(20,20)
+        ratingInfoFrame.Note:SetAllPoints(ratingInfoFrame)
+        ratingInfoFrame.Note:Hide()
+        groupFinderRioRatingInfoFrames[searchResult] = ratingInfoFrame
+        return ratingInfoFrame
+
+    end
+end
 local function updateApplicationListEntry(member, appID, memberIdx)
     local name = member.Name:GetText()
-    local score, ilvl = getScoreForApplicant(appID, memberIdx)
-    member.Name:SetText(colorScore(score).." - "..name)
+    local applicantInfo = C_LFGList.GetApplicantInfo(appID)
+    local mainScore, score, itemLevel = getScoreForApplicant(appID, memberIdx)
+    local ratingInfoFrame = getRatingInfoFrame(member)
+    if not ratingInfoFrame then
+        return
+    end
+    ratingInfoFrame:SetParent(member)
+    ratingInfoFrame:SetPoint("TOP",member,"TOP")
+    ratingInfoFrame:SetPoint("RIGHT",member.RoleIcon1,"LEFT",-10,0)
+    if mainScore then
+        ratingInfoFrame.Rating:SetText("["..mainScore.."]")
+    else
+        ratingInfoFrame.Rating:SetText(score)
+    end
+    ratingInfoFrame.Rating:SetTextColor(RaiderIO.GetScoreColor(score))
+    ratingInfoFrame.Rating:SetAllPoints(member.Rating)
+    member.Rating:Hide()
+    if applicantInfo.comment and applicantInfo.comment~="" then
+        ratingInfoFrame.Note:Show()
+    else
+        ratingInfoFrame.Note:Hide()
+    end
+    ratingInfoFrame:Show()
 end
 
 
@@ -109,34 +176,13 @@ local APPLICATION_CANCELED = "cancelled"
 local APPLICATION_TIMEDOUT = "timedout"
 frame:RegisterEvent("LFG_LIST_APPLICANT_UPDATED")
 frame:SetScript("OnEvent",function(self,event,...)
-    if event == "LFG_LIST_SEARCH_RESULT_UPDATED" then
-        local searchResultID = ...
-        print("----------------")
-        print(searchResultID)
-        print(getScoreForLeader(C_LFGList.GetSearchResultInfo(searchResultID)))
-    elseif event == "LFG_LIST_APPLICANT_UPDATED" then
+    if event == "LFG_LIST_APPLICANT_UPDATED" then
         local applicantID = ...
         local applicantInfo = C_LFGList.GetApplicantInfo(applicantID)
         if not applicantInfo or applicantInfo.applicationStatus == APPLICATION_CANCELED or applicantInfo.applicationStatus == APPLICATION_TIMEDOUT then
             C_LFGList.RefreshApplicants()
         end
-    elseif event == "PLAYER_ENTERING_WORLD" then
-        if RaiderIO then
-            local testprofile = RaiderIO.GetProfile("player") or RaiderIO.GetProfile("Nerfmeta-Area52",1)
-            DevTools_Dump(testprofile)
-            DevTool:AddData(testprofile,"testprofile")
-            local score = 0;
-            if (testprofile) then
-                -- use main score if bigger then 0 or current score
-                score = testprofile.mythicKeystoneProfile.mainCurrentScore and testprofile.mythicKeystoneProfile.mainCurrentScore>0 or testprofile.mythicKeystoneProfile.currentScore
-            else
-                score = 0
-            end
-            print("RaiderIO Score: "..score)
-        else
-            print("RaiderIO is not loaded")
-        end
-        
-    end
-	
+	end
 end)
+
+
