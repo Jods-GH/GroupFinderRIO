@@ -41,9 +41,10 @@ local function updateLfgListEntry(entry, ...)
     end
     local mainScore,score = getScoreForLeader(searchResult)
     if mainScore and mainScore>score then
-        entry.Name:SetText("["..colorScore(mainScore).."]"..colorScore(score) .. "   -    ".. entry.Name:GetText())
+        entry.Name:SetText("["..colorScore(mainScore).."] "..colorScore(score) .. "   -    ".. entry.Name:GetText())
+    else
+        entry.Name:SetText(colorScore(score) .. "   -    ".. entry.Name:GetText())
     end
-    entry.Name:SetText(colorScore(score) .. "   -    ".. entry.Name:GetText())
 end
 local function compareSearchEntries(a,b)
     local mainScoreA, scoreA = getScoreForLeader(C_LFGList.GetSearchResultInfo(a))
@@ -65,7 +66,7 @@ local function sortSearchResults(results)
 end
 
 local function getScoreForApplicant(applicantID, numMember)
-    local name, _, _, _, itemLevel, _, _, _, _, _, _, dungeonScore, _ = C_LFGList.GetApplicantMemberInfo(applicantID, numMember)
+    local name, class, _, _, itemLevel, _, _, _, _, _, _, dungeonScore, _ = C_LFGList.GetApplicantMemberInfo(applicantID, numMember)
     itemLevel = itemLevel or 0
     if RaiderIO.GetProfile(name,1) then -- check if you can somehow get faction of an application
         local profile = RaiderIO.GetProfile(name,1)
@@ -120,13 +121,13 @@ local function getRatingInfoFrame(searchResult)
     else
         local ratingInfoFrame = CreateFrame("Frame")
         ratingInfoFrame:SetFrameStrata("HIGH")
-        ratingInfoFrame:SetSize(20,20)
+        ratingInfoFrame:SetSize(30,20)
         ratingInfoFrame:SetPoint("TOP")
 
         ratingInfoFrame.Rating = ratingInfoFrame:CreateFontString("ratingString", "ARTWORK", "GameFontNormalSmall")
-        ratingInfoFrame.Rating:SetSize(35,10)
+        ratingInfoFrame.Rating:SetSize(40,10)
         ratingInfoFrame.Rating:SetPoint("CENTER",ratingInfoFrame,"CENTER")
-        ratingInfoFrame.Rating:SetJustifyH("RIGHT")
+        ratingInfoFrame.Rating:SetJustifyH("LEFT")
 
         ratingInfoFrame.Note = ratingInfoFrame:CreateTexture("noteimage", "ARTWORK")
         ratingInfoFrame.Note:SetAtlas("transmog-icon-chat")
@@ -151,12 +152,16 @@ local function updateApplicationListEntry(member, appID, memberIdx)
     ratingInfoFrame:SetPoint("RIGHT",member.RoleIcon1,"LEFT",-10,0)
     if mainScore then
         ratingInfoFrame.Rating:SetText("["..mainScore.."]")
+        ratingInfoFrame.Rating:SetTextColor(RaiderIO.GetScoreColor(mainScore))
     else
         ratingInfoFrame.Rating:SetText(score)
+        ratingInfoFrame.Rating:SetTextColor(RaiderIO.GetScoreColor(score))
     end
-    ratingInfoFrame.Rating:SetTextColor(RaiderIO.GetScoreColor(score))
-    ratingInfoFrame.Rating:SetAllPoints(member.Rating)
+    ratingInfoFrame.Rating:SetPoint("LEFT",member.Rating,"LEFT")
+    ratingInfoFrame.Rating:SetPoint("TOP",member.Rating,"TOP")
+    ratingInfoFrame.Rating:SetPoint("BOTTOM",member.Rating,"BOTTOM")
     member.Rating:Hide()
+
     if applicantInfo.comment and applicantInfo.comment~="" then
         ratingInfoFrame.Note:Show()
     else
