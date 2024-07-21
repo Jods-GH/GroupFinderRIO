@@ -2,12 +2,44 @@
 ## Title: GroupFinderRio
 ## Version: @project-version@
 ## Notes: Adds Rio score to the group finder and allows for sorting
+## SavedVariables: GroupFinderRIO
 ## Author: Jods
 ## X-Curse-Project-ID: 1066197
 ## X-Wago-ID: 56n9wjN9
 ## RequiredDeps: RaiderIO
+## OptionalDeps: Ace3
 
 #Libs
 embeds.xml
 
+# Locales
+Locales\enUS.lua
+Locales\deDE.lua
+Locales\esES.lua
+Locales\itIT.lua
+Locales\frFR.lua
+Locales\esMX.lua
+Locales\koKR.lua
+Locales\ptBR.lua
+Locales\ruRU.lua
+Locales\zhCN.lua
+Locales\zhTW.lua
+ 
+Locales\Locales.lua
+
+# Data
+Data\SpecList.lua
+
+# Utils
+Util\UtilFunctions.lua
+Util\SpecSortFrame.lua
+
+# Options
+Options\OptionDefaults.lua
+Options\Options.lua
+
+# Core
+Main.lua
 GroupFinderRio.lua
+
+
