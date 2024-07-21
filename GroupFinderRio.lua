@@ -168,7 +168,7 @@ local function sortApplications(applicants)
     end
     local entryData = C_LFGList.GetActiveEntryInfo()
     local activityInfoTable= C_LFGList.GetActivityInfoTable(entryData.activityID)
-    if not activityInfoTable.categoryID ~= GROUP_FINDER_CATEGORY_ID_DUNGEONS then return end
+    if activityInfoTable.categoryID ~= GROUP_FINDER_CATEGORY_ID_DUNGEONS then return end
     table.sort(applicants, compareApplicants)
 end
 local groupFinderRioRatingInfoFrames = {}
