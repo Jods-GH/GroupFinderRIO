@@ -118,11 +118,11 @@ GFIO.createOrShowSpecSelectFrame = function()
     table.sort(dps.children, sortSpecs)
     dps:DoLayout()
  
-    PVEFrame:HookScript("OnShow", function() 
+    LFGListFrame.ApplicationViewer:HookScript("OnShow", function() 
         GFIO.specSelectFrame:Show() 
         GFIO.specSelectFrame:EnableResize(false) 
     end)
-    PVEFrame:HookScript("OnHide", function() 
+    LFGListFrame.ApplicationViewer:HookScript("OnHide", function() 
         GFIO.specSelectFrame:Hide()
     end)
     return GFIO.specSelectFrame
