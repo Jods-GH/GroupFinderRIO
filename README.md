@@ -2,7 +2,11 @@
 [![PayPal][SVG-PayPal]][PayPal]
 [![Release][SVG-Release]][Release]
 # GroupFinderRIO
-Adds Rio Score display to the GroupFinder frame
+Enhance your World of Warcraft group finding experience with GroupFinderRio! This addon adds score-dependent sorting to the Search and Application windows, making it easier to find and join groups that match your skill level, and to find the perfect candidates for your group. GroupFinderRio also automatically removes timed-out or canceled requests from your view, keeping the application view clean and up-to-date. Improve your group finding efficiency and focus on the adventures that matter with GroupFinderRio!
+
+Open the options by typing /gfio
+
+For Feature suggestions or Bug reports please use Github or join the Discord
 
 [//]: # (Links)
 
