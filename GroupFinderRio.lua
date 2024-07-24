@@ -98,15 +98,8 @@ end
 local function getScoreForApplicant(applicantID, numMember)
     local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, factionGroup, raceID, specID = C_LFGList.GetApplicantMemberInfo(applicantID, numMember)
     itemLevel = itemLevel or 0
-    if RaiderIO.GetProfile(name,1) then -- check if you can somehow get faction of an application
-        local profile = RaiderIO.GetProfile(name,1)
-        local mainScore, score = getScoreForRioProfile(profile)
-        if dungeonScore and score and dungeonScore>score then
-            score = dungeonScore
-        end
-        return mainScore, score or 0, itemLevel, specID
-    elseif RaiderIO.GetProfile(name,2) then
-        local profile = RaiderIO.GetProfile(name,2)
+    if RaiderIO.GetProfile(name,factionGroup) then -- check if you can somehow get faction of an application
+        local profile = RaiderIO.GetProfile(name,factionGroup)
         local mainScore, score = getScoreForRioProfile(profile)
         if dungeonScore and score and dungeonScore>score then
             score = dungeonScore
@@ -184,6 +177,11 @@ local function getRatingInfoFrame(searchResult)
         ratingInfoFrame:SetSize(30,20)
         ratingInfoFrame:SetPoint("TOP")
 
+        ratingInfoFrame.KeyLevel = ratingInfoFrame:CreateFontString("keyLevelString", "ARTWORK", "GameFontNormalSmall")
+        ratingInfoFrame.KeyLevel:SetSize(30,10)
+        ratingInfoFrame.KeyLevel:SetPoint("BOTTOM",ratingInfoFrame,"BOTTOM")
+        ratingInfoFrame.KeyLevel:SetJustifyH("LEFT")
+
         ratingInfoFrame.Rating = ratingInfoFrame:CreateFontString("ratingString", "ARTWORK", "GameFontNormalSmall")
         ratingInfoFrame.Rating:SetSize(40,10)
         ratingInfoFrame.Rating:SetPoint("CENTER",ratingInfoFrame,"CENTER")
@@ -206,6 +204,10 @@ local function updateApplicationListEntry(member, appID, memberIdx)
     local name = member.Name:GetText()
     local applicantInfo = C_LFGList.GetApplicantInfo(appID)
     local mainScore, score, itemLevel = getScoreForApplicant(appID, memberIdx)
+    local ratingInfoFrame = getRatingInfoFrame(member)
+    if not ratingInfoFrame then
+        return
+    end
     if (GFIO.db.profile.showKeyLevel) then
         local entryData = C_LFGList.GetActiveEntryInfo()
         local bestDungeonScoreForListing = C_LFGList.GetApplicantDungeonScoreForListing(appID, memberIdx, entryData.activityID)
@@ -214,13 +216,16 @@ local function updateApplicationListEntry(member, appID, memberIdx)
             color = "FF33FF00"
         end
         local run = bestDungeonScoreForListing.bestRunLevel or 0
+        local chestPrefix = ""
+        for i= 1, bestDungeonScoreForListing.bestLevelIncrement do
+            chestPrefix= chestPrefix.."+"
+        end
+        run = chestPrefix.." "..run
         local bestrunLevel = WrapTextInColorCode(run, color)
-        name = name.. "("..bestrunLevel..")"
-        member.Name:SetText(name)
-    end
-    local ratingInfoFrame = getRatingInfoFrame(member)
-    if not ratingInfoFrame then
-        return
+        member.Name:SetPoint("TOP",member,"TOP",0,0)
+        ratingInfoFrame.KeyLevel:SetPoint("BOTTOM",member,"BOTTOM",0,0)
+        ratingInfoFrame.KeyLevel:SetPoint("LEFT",member.Name,"LEFT",2,0)
+        ratingInfoFrame.KeyLevel:SetText(bestrunLevel)
     end
     ratingInfoFrame:SetParent(member)
     ratingInfoFrame:SetPoint("TOP",member,"TOP")
@@ -232,13 +237,11 @@ local function updateApplicationListEntry(member, appID, memberIdx)
         ratingInfoFrame.Rating:SetText(score)
         ratingInfoFrame.Rating:SetTextColor(RaiderIO.GetScoreColor(score))
     end
-    ratingInfoFrame.Rating:SetPoint("LEFT",member.Rating,"LEFT")
-    ratingInfoFrame.Rating:SetPoint("TOP",member.Rating,"TOP")
-    ratingInfoFrame.Rating:SetPoint("BOTTOM",member.Rating,"BOTTOM")
+    ratingInfoFrame.Rating:SetPoint("CENTER",member.Rating,"CENTER")
     member.Rating:Hide()
     if GFIO.db.profile.showNote and applicantInfo.comment and applicantInfo.comment~="" then
         ratingInfoFrame.Note:Show()
-        ratingInfoFrame.Note:SetPoint("RIGHT",member.RoleIcon1,"LEFT",0,0)
+        ratingInfoFrame.Note:SetPoint("RIGHT",member.RoleIcon1,"LEFT",-2,0)
     else
         ratingInfoFrame.Note:Hide()
     end
