@@ -1,5 +1,5 @@
 local appName, GFIO = ...
-
+local CustomNames = C_AddOns.IsAddOnLoaded("CustomNames") and LibStub and LibStub("CustomNames")
 ---comment helper to get score from a RaiderIo profile
 ---@param profile table
 ---@return integer? Mainscore
@@ -95,7 +95,8 @@ end
 ---@return number Score
 ---@return number ItemLevel
 ---@return number specID
-local function getScoreForApplicant(applicantID, numMember)
+---@return string name
+local function getApplicantInfo(applicantID, numMember)
     local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, factionGroup, raceID, specID = C_LFGList.GetApplicantMemberInfo(applicantID, numMember)
     itemLevel = itemLevel or 0
     if RaiderIO.GetProfile(name,factionGroup) then -- check if you can somehow get faction of an application
@@ -104,9 +105,9 @@ local function getScoreForApplicant(applicantID, numMember)
         if dungeonScore and score and dungeonScore>score then
             score = dungeonScore
         end
-        return mainScore, score or 0, itemLevel, specID
+        return mainScore, score or 0, itemLevel, specID, name
     else
-        return nil, dungeonScore or 0, itemLevel, specID
+        return nil, dungeonScore or 0, itemLevel, specID, name
     end
 end
 ---comment helper to get the score for an application
@@ -121,7 +122,7 @@ local function getScoreForApplication(applicationID)
     local ilvl = 0
     local specIDs = false
     for i= 0,applicantInfo.numMembers do 
-        local applicantMainScore, applicantScore, applicantIlvl, specID = getScoreForApplicant(applicationID,i)
+        local applicantMainScore, applicantScore, applicantIlvl, specID, name = getApplicantInfo(applicationID,i)
         if applicantMainScore then
             score = score + applicantMainScore
         else
@@ -201,9 +202,14 @@ end
 ---@param appID number
 ---@param memberIdx number
 local function updateApplicationListEntry(member, appID, memberIdx)
-    local name = member.Name:GetText()
     local applicantInfo = C_LFGList.GetApplicantInfo(appID)
-    local mainScore, score, itemLevel = getScoreForApplicant(appID, memberIdx)
+    local mainScore, score, itemLevel, specID, name = getApplicantInfo(appID,memberIdx)
+    if CustomNames then
+        local customName = CustomNames.Get(name)
+        if name ~= customName then
+            member.Name:SetText(customName)
+        end
+    end
     local ratingInfoFrame = getRatingInfoFrame(member)
     if not ratingInfoFrame then
         return

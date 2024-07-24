@@ -7,7 +7,7 @@
 ## X-Curse-Project-ID: 1066197
 ## X-Wago-ID: 56n9wjN9
 ## RequiredDeps: RaiderIO
-## OptionalDeps: Ace3
+## OptionalDeps: Ace3, CustomNames
 
 #Libs
 embeds.xml
