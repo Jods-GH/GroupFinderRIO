@@ -10,9 +10,9 @@ local function createSpecToggle(specID, info, frame)
     frame:AddChild(specToggle)
     specToggle:SetUserData("order", info.order)
     specToggle:SetImage(info.icon)
-    specToggle:SetImageSize(25, 25) 
-    specToggle:SetWidth(25)
-    specToggle:SetHeight(25)
+    specToggle:SetImageSize(35, 35) 
+    specToggle:SetWidth(35)
+    specToggle:SetHeight(35)
     if GFIO.db.profile.spec[specID] then
         specToggle.image:SetDesaturated(false)
     else
@@ -35,48 +35,49 @@ end
 local sortSpecs = function(a,b) 
     return a:GetUserData("order") < b:GetUserData("order") 
 end
+
+
 ---comment creates the main frame for the spec icons
----@return AceGUIWidget
+---@return table|frame
 local function createMainFrame()
-    GFIO.specSelectFrame = AceGUI:Create("Window")
-    GFIO.specSelectFrame:SetHeight(130)
-    GFIO.specSelectFrame:SetParent(PVEFrame)
-    GFIO.specSelectFrame:SetPoint("TOPLEFT", PVEFrame, "BOTTOMLEFT", 0, -30)
-    GFIO.specSelectFrame:SetPoint("TOPRIGHT", PVEFrame, "BOTTOMRIGHT", 0, -30)
-    GFIO.specSelectFrame.closebutton:Hide()
-    GFIO.specSelectFrame:EnableResize(false)
-    GFIO.specSelectFrame:SetFullWidth(true)
-    GFIO.specSelectFrame:SetFullHeight(true)
-    GFIO.specSelectFrame:SetTitle(GFIO.getLocalisation("enableSpecPriority"))
-    GFIO.specSelectFrame:SetLayout("Flow")
-    GFIO.specSelectFrame:Hide()
-    return GFIO.specSelectFrame
+    local frame = CreateFrame("Frame", "GFIO_SpecSelectFrame", PVEFrame, "PortraitFrameTemplate")
+    frame:SetHeight(200)
+    frame:SetMovable(true)
+    frame.TitleContainer:SetScript("OnMouseDown", function(self, button) frame:StartMoving() end)
+    frame.TitleContainer:SetScript("OnMouseUp", function(self, button) frame:StopMovingOrSizing() end)
+    frame:SetParent(PVEFrame)
+    frame:SetPoint("TOPLEFT", PVEFrame, "BOTTOMLEFT", 0, -50)
+    frame:SetPoint("TOPRIGHT", PVEFrame, "BOTTOMRIGHT", 0, -50)
+    frame.CloseButton:Hide()
+    frame:SetTitle(GFIO.getLocalisation("enableSpecPriority"))
+    local color = CreateColorFromHexString("ff1f1e21") -- PANEL_BACKGROUND_COLOR
+    local r, g, b = color:GetRGB()
+    frame.Bg:SetColorTexture(r, g, b, 0.8)
+    frame.Bg.colorTexture = {r, g, b, 0.8}
+    frame:SetFrameStrata("DIALOG")
+    --frame:SetPortraitShown(false)
+    frame:SetPortraitTextureRaw("Interface\\AddOns\\GroupFinderRio\\Files\\GroupFinderRio.tga")
+    --frame:SetBackdrop(PaneBackdrop)
+    frame:Hide()
+    return frame
 end
 ---comment creates a InlineGroup for the spec icons
 ---@return AceGUIWidget
 local function createSpecLine()
     local line = AceGUI:Create("InlineGroup")
     line:SetLayout("Flow")
-    line.frame:SetFrameLevel(GFIO.specSelectFrame.frame:GetFrameLevel() +1)
+    line:SetParent(GFIO.specSelectFrame)
+    line.frame:SetParent(GFIO.specSelectFrame)
+    line.frame:SetFrameStrata("DIALOG")
+    line.frame:SetFrameLevel(GFIO.specSelectFrame:GetFrameLevel() + 1)
     line:SetFullWidth(true)
     line:SetRelativeWidth(1)
     line.titletext:Hide()
     line.titletext = nil
-    line:SetParent(GFIO.specSelectFrame)
+    line.frame:GetChildren():ClearBackdrop() -- get backdrop and border outta here
+    line:SetWidth(GFIO.specSelectFrame:GetWidth()/2)
+    line:SetHeight(GFIO.specSelectFrame:GetHeight()/2)
     return line
-end
----comment creates spacers between the spec icons to format them better
----@param start number
----@param finish number
----@param frame AceGUIWidget
-local function createSpacers(start, finish, frame)
-    for i=start, finish do
-        local spacer = AceGUI:Create("Label")
-        spacer:SetWidth(25)
-        spacer:SetHeight(25)
-        spacer:SetUserData("order", i) 
-        frame:AddChild(spacer)
-    end
 end
 ---comment creates the spec frame or returns it if it already exists
 ---@return AceGUIWidget
@@ -86,41 +87,67 @@ GFIO.createOrShowSpecSelectFrame = function()
         return GFIO.specSelectFrame
     end
     -- main frame
-    createMainFrame()
+    GFIO.specSelectFrame = createMainFrame()
     -- tank and healer frame
-    local tankHeal = createSpecLine()
-    tankHeal:SetPoint("TOPLEFT",GFIO.specSelectFrame.frame,"TOPLEFT",0,0)
-    tankHeal:SetPoint("BOTTOMLEFT",GFIO.specSelectFrame.frame,"TOPLEFT",0,-35)
-    tankHeal:SetPoint("TOPRIGHT",GFIO.specSelectFrame.frame,"TOPRIGHT",0, 0)
-    tankHeal:SetPoint("BOTTOMRIGHT",GFIO.specSelectFrame.frame,"TOPRIGHT",0,-35)
+    local tank = createSpecLine()
+    tank:SetPoint("TOPLEFT",GFIO.specSelectFrame,"TOPLEFT",35,0)
+    tank:SetPoint("TOPRIGHT",GFIO.specSelectFrame,"TOP",0, 0)
+    tank:SetPoint("BOTTOMLEFT",GFIO.specSelectFrame,"LEFT",35,0)
+    tank:SetPoint("BOTTOMRIGHT",GFIO.specSelectFrame,"CENTER",0, 0)
     for specId,info in pairs (GFIO.SpecList.tank) do
-        createSpecToggle(specId,info, tankHeal)
+        createSpecToggle(specId,info, tank)
     end
-    createSpacers(#tankHeal.children+1,#tankHeal.children+2, tankHeal)
+    table.sort(tank.children, sortSpecs)
+    tank:DoLayout()
+
+--[[ debug
+    local debugIcon = CreateFrame("Frame",nil,GFIO.specSelectFrame)
+    debugIcon.tex = debugIcon:CreateTexture()
+    debugIcon.tex:SetAllPoints(debugIcon)
+    debugIcon.tex:SetTexture("134400")
+    debugIcon:SetWidth(20)
+    debugIcon:SetHeight(20)
+    debugIcon:SetParent(GFIO.specSelectFrame)
+    debugIcon:SetPoint("CENTER",GFIO.specSelectFrame,"CENTER",0,0)
+    DevTool:AddData(tank, "tank")
+]]--debug 
+    local heal = createSpecLine()
+    heal:SetPoint("TOPLEFT",GFIO.specSelectFrame,"TOP",0,0)
+    heal:SetPoint("TOPRIGHT",GFIO.specSelectFrame,"TOPRIGHT",0, 0)
+    heal:SetPoint("BOTTOMLEFT",GFIO.specSelectFrame,"CENTER",0,0)
+    heal:SetPoint("BOTTOMRIGHT",GFIO.specSelectFrame,"RIGHT",0, 0)
     for specId,info  in pairs (GFIO.SpecList.healer) do
-        createSpecToggle(specId,info,tankHeal)
+        createSpecToggle(specId,info,heal)
     end
-    table.sort(tankHeal.children, sortSpecs)
-    tankHeal:DoLayout()
+    table.sort(heal.children, sortSpecs)
+    heal:DoLayout()
     -- dps frame
-    local dps = createSpecLine()
-    dps:SetPoint("TOPLEFT",GFIO.specSelectFrame.frame,"TOPLEFT",0,-35)
-    dps:SetPoint("BOTTOMLEFT",GFIO.specSelectFrame.frame,"TOPLEFT",0,-130)
-    dps:SetPoint("TOPRIGHT",GFIO.specSelectFrame.frame,"TOPRIGHT",0,-35)
-    dps:SetPoint("BOTTOMRIGHT",GFIO.specSelectFrame.frame,"TOPRIGHT",0,-130)
-    for specId,info in pairs (GFIO.SpecList.meleedps) do
-        createSpecToggle(specId,info, dps)
+
+    local meleeDps = createSpecLine()
+    --meleeDps:SetPoint("TOPLEFT",GFIO.specSelectFrame,"LEFT",0,0)
+    -- meleeDps:SetPoint("TOPRIGHT",GFIO.specSelectFrame,"CENTER",0,0)
+    meleeDps:SetPoint("BOTTOMLEFT",GFIO.specSelectFrame,"BOTTOMLEFT",0,0)
+    meleeDps:SetPoint("BOTTOMRIGHT",GFIO.specSelectFrame,"BOTTOM",0,0)
+    for specId,info in pairs(GFIO.SpecList.meleedps) do
+        createSpecToggle(specId, info, meleeDps)
     end
-    createSpacers(#dps.children+1,#dps.children+2, dps)
-    for specId,info in pairs (GFIO.SpecList.rangedps) do
-        createSpecToggle(specId, info, dps)
+    table.sort(meleeDps.children, sortSpecs)
+    meleeDps:DoLayout()
+    
+    local rangeDps = createSpecLine()
+    --rangeDps:SetPoint("TOPLEFT",GFIO.specSelectFrame,"CENTER",0,0)
+    --rangeDps:SetPoint("TOPRIGHT",GFIO.specSelectFrame,"RIGHT",0,0)
+    rangeDps:SetPoint("BOTTOMLEFT",GFIO.specSelectFrame,"BOTTOM",0,0)
+    rangeDps:SetPoint("BOTTOMRIGHT",GFIO.specSelectFrame,"BOTTOMRIGHT",0,0)
+
+    for specId,info in pairs(GFIO.SpecList.rangedps) do
+        createSpecToggle(specId, info, rangeDps)
     end
-    table.sort(dps.children, sortSpecs)
-    dps:DoLayout()
+    table.sort(rangeDps.children, sortSpecs)
+    rangeDps:DoLayout()
  
     LFGListFrame.ApplicationViewer:HookScript("OnShow", function() 
         GFIO.specSelectFrame:Show() 
-        GFIO.specSelectFrame:EnableResize(false) 
     end)
     LFGListFrame.ApplicationViewer:HookScript("OnHide", function() 
         GFIO.specSelectFrame:Hide()

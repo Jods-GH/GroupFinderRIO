@@ -243,6 +243,7 @@ local function updateApplicationListEntry(member, appID, memberIdx)
         member.Name:SetPoint("TOP",member,"TOP",0,0)
         ratingInfoFrame.KeyLevel:SetPoint("BOTTOM",member,"BOTTOM",0,0)
         ratingInfoFrame.KeyLevel:SetPoint("LEFT",member.Name,"LEFT",2,0)
+        ratingInfoFrame.KeyLevel:SetPoint("RIGHT",member.Name,"RIGHT",2,0)
         ratingInfoFrame.KeyLevel:SetText(bestrunLevel)
     end
     ratingInfoFrame:SetParent(member)

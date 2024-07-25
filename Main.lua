@@ -34,7 +34,7 @@ function GroupFinderRIO:OnDisable()
 	-- Called when the addon is disabled
 end
 
-function JDT_AddonCompartmentFunction()
+function GroupFinderRIO_AddonCompartmentFunction()
     GroupFinderRIO:SlashCommand("AddonCompartmentFrame")
 end
 

@@ -114,55 +114,55 @@ GFIO.SpecList = {
     rangedps = {
         [62] =	{
             icon =135932,	-- arcane
-            order = 16
+            order = 1
         },	
         [63] =	{
             icon =135810,	-- fire
-            order = 17
+            order = 2
         },	
         [64] =	{
             icon =135846,	-- frost mage  
-            order = 18
+            order = 3
         },	  
         [102] = {
             icon =136096,	-- balance
-            order = 19
+            order = 4
         },	
         [253] =	{
             icon =461112,	-- bm
-            order = 20
+            order = 5
         },	
         [254] =	{
             icon =236179,	-- mm
-            order = 21
+            order = 6
         },	
         [258] =	{
             icon =136207,	-- shadow	
-            order = 22
+            order = 7
         },	
         [262] =	{
             icon =136048,	-- elemental
-            order = 23
+            order = 8
         },	
         [265] =	{
             icon =136145,	-- affliction
-            order = 24
+            order = 9
         },	
         [266] =	{
             icon =136172,	-- demonology
-            order = 25
+            order = 10
         },	
         [267] =	{
             icon =136186,	-- destruction	
-            order = 26
+            order = 11
         },		
         [1467] = {
             icon =4511811, -- devestation
-            order = 27
+            order = 12
         },	
         [1473] = {
             icon =5198700, -- augmentation	
-            order = 28
+            order = 13
         },	
     },
 
