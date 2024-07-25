@@ -22,5 +22,7 @@ if L then
     L["addScoreToGroupDescription"] = "Add the Score of the GroupLeader to the Group View"
     L["sortGroupsByScore"] = "Sort Groups by Score"
     L["sortGroupsByScoreDescription"] = "Sort the Groups by the Score of the GroupLeader"
+    L["groupNameBeforeScore"] = "Group Name before Score"
+    L["groupNameBeforeScoreDescription"] = "Show the Group Name before the Score of the GroupLeader instead of after"
     GFIO.localisation = L
 end

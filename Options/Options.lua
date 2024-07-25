@@ -93,6 +93,17 @@ GFIO.options = {
                   return  GFIO.db.profile.sortGroupsByScore --Sets value of toggles depending on SavedVariables 
               end,
             },
+            groupNameBeforeScore = {
+              name = GFIO.getLocalisation("groupNameBeforeScore"),
+              desc = GFIO.getLocalisation("groupNameBeforeScoreDescription"),
+              order = 30,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.groupNameBeforeScore = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.groupNameBeforeScore --Sets value of toggles depending on SavedVariables 
+              end,
+            },
           }
         }
   }

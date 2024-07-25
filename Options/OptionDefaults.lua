@@ -9,6 +9,7 @@ GFIO.OptionDefaults = {
 		sortApplicants = true,
 		sortGroupsByScore = true,
 		sortAscending = false,
+		groupNameBeforeScore = false,
 		spec = {
 			[62] = true, -- arcane
 			[63] = true, -- fire

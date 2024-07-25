@@ -59,10 +59,22 @@ local function updateLfgListEntry(entry, ...)
         return
     end
     local mainScore,score = getScoreForLeader(searchResult)
-    if mainScore and mainScore>score then
-        entry.Name:SetText("["..colorScore(mainScore).."] "..colorScore(score) .. "   -    ".. entry.Name:GetText())
+    local groupName = ""
+    if GFIO.db.profile.groupNameBeforeScore then
+        if mainScore and mainScore>score then
+            groupName = entry.Name:GetText().. " - ".."["..colorScore(mainScore).."] "..colorScore(score)
+        else
+            groupName =  entry.Name:GetText().. "   -    ".. colorScore(score)
+        end
     else
-        entry.Name:SetText(colorScore(score) .. "   -    ".. entry.Name:GetText())
+        if mainScore and mainScore>score then
+            groupName = "["..colorScore(mainScore).."] "..colorScore(score) .. " - ".. entry.Name:GetText()
+        else
+            groupName = colorScore(score) .. "   -    ".. entry.Name:GetText()
+        end
+    end
+    if groupname ~= "" then
+        entry.Name:SetText(groupName)
     end
 end
 ---comment compares two different search results to sort them by score
