@@ -58,7 +58,9 @@ local function createMainFrame()
     --frame:SetPortraitShown(false)
     frame:SetPortraitTextureRaw("Interface\\AddOns\\GroupFinderRio\\Files\\GroupFinderRio.tga")
     --frame:SetBackdrop(PaneBackdrop)
-    frame:Hide()
+    if not LFGListFrame.ApplicationViewer:IsShown() then
+        frame:Hide()
+    end
     return frame
 end
 ---comment creates a InlineGroup for the spec icons
@@ -82,6 +84,12 @@ end
 ---comment creates the spec frame or returns it if it already exists
 ---@return AceGUIWidget
 GFIO.createOrShowSpecSelectFrame = function()
+    if GFIO.db.profile.disableSpecSelector then
+        if GFIO.specSelectFrame then
+            GFIO.specSelectFrame:Hide()
+        end
+        return nil
+    end
     if GFIO.specSelectFrame then
         GFIO.specSelectFrame:Show()
         return GFIO.specSelectFrame

@@ -24,5 +24,7 @@ if L then
     L["sortGroupsByScoreDescription"] = "Sort the Groups by the Score of the GroupLeader"
     L["groupNameBeforeScore"] = "Group Name before Score"
     L["groupNameBeforeScoreDescription"] = "Show the Group Name before the Score of the GroupLeader instead of after"
+    L["disableSpecSelector"] = "Disable Spec Selector"
+    L["disableSpecSelectorDescription"] = "Disable the Spec Selector in the Application view which can be used to prioritise specs in searching"
     GFIO.localisation = L
 end

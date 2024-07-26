@@ -64,6 +64,18 @@ GFIO.options = {
                   return  GFIO.db.profile.sortApplicants --Sets value of toggles depending on SavedVariables 
               end,
             },
+            disableSpecSelector = {
+              name = GFIO.getLocalisation("disableSpecSelector"),
+              desc = GFIO.getLocalisation("disableSpecSelectorDescription"),
+              order = 30,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.disableSpecSelector = val GFIO.createOrShowSpecSelectFrame() end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.disableSpecSelector --Sets value of toggles depending on SavedVariables 
+              end,
+            },
+            
                   
           }
       },
