@@ -49,10 +49,14 @@ function GroupFinderRIO:SlashCommand(msg) -- called when slash command is used
 end
 local APPLICATION_CANCELED = "cancelled"
 local APPLICATION_TIMEDOUT = "timedout"
+local APPLICATION_INVITED = "inviteaccepted"
+local APPLICATION_INVITE_DECLINED = "invitedeclined"
 function GroupFinderRIO:LFG_LIST_APPLICANT_UPDATED(event, applicantID)
     if event == "LFG_LIST_APPLICANT_UPDATED" then
         local applicantInfo = C_LFGList.GetApplicantInfo(applicantID)
-        if not applicantInfo or applicantInfo.applicationStatus == APPLICATION_CANCELED or applicantInfo.applicationStatus == APPLICATION_TIMEDOUT then
+        if not applicantInfo or applicantInfo.applicationStatus == APPLICATION_CANCELED 
+            or applicantInfo.applicationStatus == APPLICATION_TIMEDOUT or applicantInfo.applicationStatus == APPLICATION_INVITED 
+            or applicantInfo.applicationStatus == APPLICATION_INVITE_DECLINED then
             C_LFGList.RefreshApplicants()
         end
 	end
