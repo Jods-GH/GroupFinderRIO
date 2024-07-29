@@ -27,6 +27,18 @@ GFIO.options = {
             return  GFIO.db.profile.useMainScore --Sets value of toggles depending on SavedVariables 
         end,
       },
+      showLanguage = {
+        name = GFIO.getLocalisation("showLanguage"),
+        desc = GFIO.getLocalisation("showLanguageDescription"),
+        order = 30,
+        width = "full",
+        type = "toggle",
+        set = function(info,val)  GFIO.db.profile.showLanguage = val end, --Sets value of SavedVariables depending on toggles
+        get = function(info)
+            return  GFIO.db.profile.showLanguage --Sets value of toggles depending on SavedVariables 
+        end,
+      },
+
       applicantView = {
         name = GFIO.getLocalisation("applicantView"),
           type = "group",
@@ -103,6 +115,17 @@ GFIO.options = {
               set = function(info,val)  GFIO.db.profile.sortGroupsByScore = val end, --Sets value of SavedVariables depending on toggles
               get = function(info)
                   return  GFIO.db.profile.sortGroupsByScore --Sets value of toggles depending on SavedVariables 
+              end,
+            },
+            showCurrentScoreInGroup = {
+              name = GFIO.getLocalisation("showCurrentScoreInGroup"),
+              desc = GFIO.getLocalisation("showCurrentScoreInGroupDescription"),
+              order = 30,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.showCurrentScoreInGroup = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.showCurrentScoreInGroup --Sets value of toggles depending on SavedVariables 
               end,
             },
             groupNameBeforeScore = {

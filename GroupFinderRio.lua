@@ -20,6 +20,7 @@ end
 ---@param searchResult LfgSearchResultData
 ---@return number? Mainscore
 ---@return number currentScore
+---@return string shortLanguage
 local function getScoreForLeader(searchResult)
     local leaderName = searchResult.leaderName
     if not leaderName and searchResult.leaderOverallDungeonScore and not searchResult.isDelisted then 
@@ -29,12 +30,19 @@ local function getScoreForLeader(searchResult)
     end
     local leaderFullName = leaderName:find("-")~=nil and leaderName or leaderName.."-"..GetNormalizedRealmName()
     local faction = searchResult.leaderFactionGroup
+    local shortLanguage  = ""
+    if leaderFullName then
+        local realm = leaderFullName:match("-(.+)")
+        local language = realm and GFIO.REALMS[realm] or ""
+        shortLanguage = GFIO.LANGUAGES[language] or ""
+    end
+
     if RaiderIO.GetProfile(leaderFullName,faction) then
         local profile = RaiderIO.GetProfile(leaderFullName,faction)
         local mainScore, score = getScoreForRioProfile(profile)
-        return  mainScore or 0, score or 0
+        return  mainScore or 0, score or 0, shortLanguage
     else
-        return nil, searchResult.leaderOverallDungeonScore or 0
+        return nil, searchResult.leaderOverallDungeonScore or 0, shortLanguage
     end
 end
 ---comment helper to wrap a string in the raiderio score color
@@ -51,26 +59,42 @@ end
 ---comment hooked to the updateLfgListEntry function to add the score to the group finder list
 ---@param entry table
 local function updateLfgListEntry(entry, ...)
-    if not GFIO.db.profile.addScoreToGroup then return end
+    if not GFIO.db.profile.addScoreToGroup and not GFIO.db.profile.showLanguage then return end
     local searchResultID = entry.GetData().resultID
     local searchResult = C_LFGList.GetSearchResultInfo(searchResultID)
     local activityInfoTable = C_LFGList.GetActivityInfoTable(searchResult.activityID)
     if (not LFGListFrame.SearchPanel:IsShown() or activityInfoTable.categoryID ~= GROUP_FINDER_CATEGORY_ID_DUNGEONS or not searchResult.leaderName) then
         return
     end
-    local mainScore,score = getScoreForLeader(searchResult)
+    local mainScore,score, shortLanguage = getScoreForLeader(searchResult)
+    local orginalText = entry.Name:GetText()
     local groupName = ""
-    if GFIO.db.profile.groupNameBeforeScore then
+    if GFIO.db.profile.showLanguage and shortLanguage and shortLanguage~="" then
+        groupName = shortLanguage.. " "
+    end
+    if GFIO.db.profile.addScoreToGroup and GFIO.db.profile.groupNameBeforeScore then
         if mainScore and mainScore>score then
-            groupName = entry.Name:GetText().. " - ".."["..colorScore(mainScore).."] "..colorScore(score)
-        else
-            groupName =  entry.Name:GetText().. "   -    ".. colorScore(score)
+            if GFIO.db.profile.showCurrentScoreInGroup then
+                groupName = orginalText.." "..groupName.. " - ".."["..colorScore(mainScore).."]" 
+            else
+                groupName = orginalText.." "..groupName.. " - ".."["..colorScore(mainScore).."] "..colorScore(score)
+            end
+        elseif GFIO.db.profile.showCurrentScoreInGroup then
+            groupName = orginalText.." "..groupName.. "   -    ".. colorScore(score)
+        elseif GFIO.db.profile.showLanguage then
+            groupName = orginalText.." "..groupName
         end
-    else
+    elseif GFIO.db.profile.addScoreToGroup then
         if mainScore and mainScore>score then
-            groupName = "["..colorScore(mainScore).."] "..colorScore(score) .. " - ".. entry.Name:GetText()
-        else
-            groupName = colorScore(score) .. "   -    ".. entry.Name:GetText()
+            if GFIO.db.profile.showCurrentScoreInGroup then
+                groupName = groupName.."["..colorScore(mainScore).."] "..colorScore(score) .. " - ".. orginalText
+            else
+                groupName = groupName.."["..colorScore(mainScore).."] - ".. orginalText
+            end
+        elseif GFIO.db.profile.showCurrentScoreInGroup then
+            groupName = groupName..colorScore(score) .. " - ".. orginalText
+        elseif GFIO.db.profile.showLanguage then
+            groupName = groupName.." - ".. orginalText
         end
     end
     if groupname ~= "" then
@@ -108,33 +132,59 @@ end
 ---@return number ItemLevel
 ---@return number specID
 ---@return string name
+---@return string language
+---@return boolean tank
+---@return boolean healer
+---@return boolean damage
 local function getApplicantInfo(applicantID, numMember)
     local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, factionGroup, raceID, specID = C_LFGList.GetApplicantMemberInfo(applicantID, numMember)
     itemLevel = itemLevel or 0
+    local shortLanguage  = ""
+    if name then
+        local realm = name:match("-(.+)")
+        local language = realm and GFIO.REALMS[realm] or ""
+        shortLanguage = GFIO.LANGUAGES[language] or ""
+    end
     if RaiderIO.GetProfile(name,factionGroup) then -- check if you can somehow get faction of an application
         local profile = RaiderIO.GetProfile(name,factionGroup)
         local mainScore, score = getScoreForRioProfile(profile)
         if dungeonScore and score and dungeonScore>score then
             score = dungeonScore
         end
-        return mainScore, score or 0, itemLevel, specID, name
+        return mainScore, score or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage
     else
-        return nil, dungeonScore or 0, itemLevel, specID, name
+        return nil, dungeonScore or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage
     end
 end
+
+
 ---comment helper to get the score for an application
 ---@param applicationID number
 ---@return number Score
 ---@return number ItemLevel
 ---@return boolean SpecIdsActive
+---@return boolean CanFit this is an application we cant check any multi asignments cause that calculation will get hardcore expensive with recursive calls etc
 local function getScoreForApplication(applicationID)
     -- we are calculating the average score and ilvl of a group to sort by
     local applicantInfo = C_LFGList.GetApplicantInfo(applicationID)
     local score = 0
     local ilvl = 0
     local specIDs = false
+    local group = GetGroupMemberCounts()
+    local dpsSpots = 3-group.DAMAGER
+    local tankSpots = 1-group.TANK
+    local healerSpots = 1-group.HEALER
+    local groupExceedsMembers = applicantInfo.numMembers > (dpsSpots + tankSpots + healerSpots)
+
     for i= 0,applicantInfo.numMembers do 
-        local applicantMainScore, applicantScore, applicantIlvl, specID, name = getApplicantInfo(applicationID,i)
+        local applicantMainScore, applicantScore, applicantIlvl, specID, name,_, tank, healer, damage = getApplicantInfo(applicationID,i)
+        if tank and not healer and not damage then
+            tankSpots = tankSpots - 1
+        elseif not tank and healer and not damage then
+            healerSpots = healerSpots - 1
+        elseif not tank and not healer and damage then
+            dpsSpots = dpsSpots - 1
+        end
         if applicantMainScore then
             score = score + applicantMainScore
         else
@@ -147,15 +197,25 @@ local function getScoreForApplication(applicationID)
     end 
     score = score/applicantInfo.numMembers
     ilvl = ilvl/applicantInfo.numMembers
-    return score, ilvl, specIDs
+    if groupExceedsMembers then
+        return score, ilvl, specIDs, false
+    elseif tankSpots < 0 or healerSpots < 0 or dpsSpots < 0 then
+        return score, ilvl, specIDs, false
+    end
+    return score, ilvl, specIDs, true
 end
 ---comment compares two different applicants to sort them by score
 ---@param a number
 ---@param b number
 ---@return boolean
 local function compareApplicants(a,b)
-    local scoreA,ilvlA,specIDsA = getScoreForApplication(a)
-    local scoreB,ilvlB,specIDsB = getScoreForApplication(b)
+    local scoreA,ilvlA,specIDsA,CanFitA = getScoreForApplication(a)
+    local scoreB,ilvlB,specIDsB,CanFitB = getScoreForApplication(b)
+    if CanFitA and not CanFitB then
+        return true
+    elseif CanFitB and not CanFitA then
+        return false
+    end
     if specIDsA and not specIDsB then
         return true
     elseif specIDsB and not specIDsA then
@@ -190,10 +250,10 @@ local function getRatingInfoFrame(searchResult)
         ratingInfoFrame:SetSize(30,20)
         ratingInfoFrame:SetPoint("TOP")
 
-        ratingInfoFrame.KeyLevel = ratingInfoFrame:CreateFontString("keyLevelString", "ARTWORK", "GameFontNormalSmall")
-        ratingInfoFrame.KeyLevel:SetSize(30,10)
-        ratingInfoFrame.KeyLevel:SetPoint("BOTTOM",ratingInfoFrame,"BOTTOM")
-        ratingInfoFrame.KeyLevel:SetJustifyH("LEFT")
+        ratingInfoFrame.AdditionalInfo = ratingInfoFrame:CreateFontString("AdditionalInfoString", "ARTWORK", "GameFontNormalSmall")
+        ratingInfoFrame.AdditionalInfo:SetSize(30,10)
+        ratingInfoFrame.AdditionalInfo:SetPoint("BOTTOM",ratingInfoFrame,"BOTTOM")
+        ratingInfoFrame.AdditionalInfo:SetJustifyH("LEFT")
 
         ratingInfoFrame.Rating = ratingInfoFrame:CreateFontString("ratingString", "ARTWORK", "GameFontNormalSmall")
         ratingInfoFrame.Rating:SetSize(40,10)
@@ -215,7 +275,7 @@ end
 ---@param memberIdx number
 local function updateApplicationListEntry(member, appID, memberIdx)
     local applicantInfo = C_LFGList.GetApplicantInfo(appID)
-    local mainScore, score, itemLevel, specID, name = getApplicantInfo(appID,memberIdx)
+    local mainScore, score, itemLevel, specID, name, shortLanguage = getApplicantInfo(appID,memberIdx)
     if CustomNames then
         local customName = CustomNames.Get(name)
         if name ~= customName then
@@ -225,6 +285,11 @@ local function updateApplicationListEntry(member, appID, memberIdx)
     local ratingInfoFrame = getRatingInfoFrame(member)
     if not ratingInfoFrame then
         return
+    end
+    local additionalInfo = ""
+
+    if GFIO.db.profile.showLanguage and shortLanguage and shortLanguage~="" then
+        additionalInfo = shortLanguage
     end
     if (GFIO.db.profile.showKeyLevel) then
         local entryData = C_LFGList.GetActiveEntryInfo()
@@ -241,10 +306,13 @@ local function updateApplicationListEntry(member, appID, memberIdx)
         run = chestPrefix.." "..run
         local bestrunLevel = WrapTextInColorCode(run, color)
         member.Name:SetPoint("TOP",member,"TOP",0,0)
-        ratingInfoFrame.KeyLevel:SetPoint("BOTTOM",member,"BOTTOM",0,0)
-        ratingInfoFrame.KeyLevel:SetPoint("LEFT",member.Name,"LEFT",2,0)
-        ratingInfoFrame.KeyLevel:SetPoint("RIGHT",member.Name,"RIGHT",2,0)
-        ratingInfoFrame.KeyLevel:SetText(bestrunLevel)
+        additionalInfo = additionalInfo.." "..bestrunLevel
+    end
+    if additionalInfo ~= "" then
+        ratingInfoFrame.AdditionalInfo:SetPoint("BOTTOM",member,"BOTTOM",0,0)
+        ratingInfoFrame.AdditionalInfo:SetPoint("LEFT",member.Name,"LEFT",2,0)
+        ratingInfoFrame.AdditionalInfo:SetPoint("RIGHT",member.RoleIcon1,"RIGHT",2,0)
+        ratingInfoFrame.AdditionalInfo:SetText(additionalInfo) 
     end
     ratingInfoFrame:SetParent(member)
     ratingInfoFrame:SetPoint("TOP",member,"TOP")

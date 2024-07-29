@@ -26,5 +26,10 @@ if L then
     L["groupNameBeforeScoreDescription"] = "Show the Group Name before the Score of the GroupLeader instead of after"
     L["disableSpecSelector"] = "Disable Spec Selector"
     L["disableSpecSelectorDescription"] = "Disable the Spec Selector in the Application view which can be used to prioritise specs in searching"
+    L["showLanguage"] = "Show Language"
+    L["showLanguageDescription"] = "Show the Language of Applicants and the GroupLeader"
+    L["showCurrentScoreInGroup"] = "Show Current Score in Group"
+    L["showCurrentScoreInGroupDescription"] = "Show the current Score of the GroupLeader in the Group View"
+    
     GFIO.localisation = L
 end
