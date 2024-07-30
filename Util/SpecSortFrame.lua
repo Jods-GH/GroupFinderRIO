@@ -9,6 +9,7 @@ local function createSpecToggle(specID, info, frame)
     local specToggle = AceGUI:Create("Icon")
     frame:AddChild(specToggle)
     specToggle:SetUserData("order", info.order)
+    specToggle:SetUserData("specID", specID)
     specToggle:SetImage(info.icon)
     specToggle:SetImageSize(35, 35) 
     specToggle:SetWidth(35)
@@ -81,6 +82,54 @@ local function createSpecLine()
     line:SetHeight(GFIO.specSelectFrame:GetHeight()/2)
     return line
 end
+
+---comment
+---@param frame AceGUIWidget
+---@param subSpecList table
+---@param iconId number
+local function createSectionToggle(frame, parentGroup, iconId)
+    local specsToggle = AceGUI:Create("Icon")
+    frame:AddChild(specsToggle)
+    specsToggle:SetUserData("order", 0)
+    specsToggle:SetImage(iconId) 
+    specsToggle:SetImageSize(35, 35) 
+    specsToggle:SetWidth(35)
+    specsToggle:SetHeight(35)
+    local shouldDesaturate = true
+    for key,value in pairs(parentGroup.children) do
+        if value and value:GetUserData("specID") then
+            local specID = value:GetUserData("specID")
+            if GFIO.db.profile.spec[specID] then
+                shouldDesaturate = false
+                break
+            end
+        end
+    end
+    specsToggle.image:SetDesaturated(shouldDesaturate)
+    specsToggle:SetCallback("OnClick", function() 
+        local isactive = true
+        for key,value in pairs(parentGroup.children) do
+            if value and value:GetUserData("specID") then
+                local specID = value:GetUserData("specID")
+                if not GFIO.db.profile.spec[specID] then
+                    isactive = false
+                    break
+                end
+            end
+        end
+        for key,value in pairs(parentGroup.children) do
+            if value and value:GetUserData("specID") then
+                local specID = value:GetUserData("specID")
+                GFIO.db.profile.spec[specID] = not isactive
+                value.image:SetDesaturated(isactive)
+
+            end
+        end
+        specsToggle.image:SetDesaturated(isactive)
+    end)
+end
+
+
 ---comment creates the spec frame or returns it if it already exists
 ---@return AceGUIWidget
 GFIO.createOrShowSpecSelectFrame = function()
@@ -102,6 +151,7 @@ GFIO.createOrShowSpecSelectFrame = function()
     tank:SetPoint("TOPRIGHT",GFIO.specSelectFrame,"TOP",0, 0)
     tank:SetPoint("BOTTOMLEFT",GFIO.specSelectFrame,"LEFT",35,0)
     tank:SetPoint("BOTTOMRIGHT",GFIO.specSelectFrame,"CENTER",0, 0)
+
     for specId,info in pairs (GFIO.SpecList.tank) do
         createSpecToggle(specId,info, tank)
     end
@@ -154,6 +204,14 @@ GFIO.createOrShowSpecSelectFrame = function()
     table.sort(rangeDps.children, sortSpecs)
     rangeDps:DoLayout()
  
+    --create section toggles
+    local sectionToggles = createSpecLine()
+    createSectionToggle(sectionToggles, tank, 135893)
+    createSectionToggle(sectionToggles, heal, 135769)
+    createSectionToggle(sectionToggles, meleeDps, 132325)
+    createSectionToggle(sectionToggles, rangeDps, 135468)
+    sectionToggles:SetPoint("CENTER",GFIO.specSelectFrame,"CENTER",50, 15)
+
     LFGListFrame.ApplicationViewer:HookScript("OnShow", function() 
         GFIO.specSelectFrame:Show() 
     end)
