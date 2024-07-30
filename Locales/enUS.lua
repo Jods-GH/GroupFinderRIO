@@ -30,6 +30,10 @@ if L then
     L["showLanguageDescription"] = "Show the Language of Applicants and the GroupLeader"
     L["showCurrentScoreInGroup"] = "Show Current Score in Group"
     L["showCurrentScoreInGroupDescription"] = "Show the current Score of the GroupLeader in the Group View"
+    L["useOfWrongRoleHighlight"] = "Use Wrong Role Highlight"
+    L["useOfWrongRoleHighlightDescription"] = "Highlights the Spec Icon in the Application View if the Applicant is not using the Role with the highest Score"
+    L["wrongRoleScoreLimitForSorting"] = "Wrong Role Score Limit for Sorting"
+    L["wrongRoleScoreLimitForSortingDescription"] = "The Score Limit for the Sorting Offroles behind mainroles. If set to 0 will always sort mainrole before offrole. If set to 5000 will always ignore main or offrole and only sort by score"
     
     GFIO.localisation = L
 end

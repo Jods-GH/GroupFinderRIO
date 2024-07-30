@@ -76,6 +76,33 @@ GFIO.options = {
                   return  GFIO.db.profile.sortApplicants --Sets value of toggles depending on SavedVariables 
               end,
             },
+            useOfWrongRoleHighlight = {
+              name = GFIO.getLocalisation("useOfWrongRoleHighlight"),
+              desc = GFIO.getLocalisation("useOfWrongRoleHighlightDescription"),
+              order = 30,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.useOfWrongRoleHighlight = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.useOfWrongRoleHighlight --Sets value of toggles depending on SavedVariables 
+              end,
+            },
+            wrongRoleScoreLimitForSorting= {
+              name = GFIO.getLocalisation("wrongRoleScoreLimitForSorting"),
+              desc = GFIO.getLocalisation("wrongRoleScoreLimitForSortingDescription"),
+              order = 31,
+              type = "range",
+              softMin = 0,
+              softMax = 5000,
+              bigStep = 1,
+              set = function(info,val)  
+                GFIO.db.profile.wrongRoleScoreLimitForSorting = val
+               end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.wrongRoleScoreLimitForSorting  --Sets value of toggles depending on SavedVariables 
+              end  
+            },
+            
             disableSpecSelector = {
               name = GFIO.getLocalisation("disableSpecSelector"),
               desc = GFIO.getLocalisation("disableSpecSelectorDescription"),

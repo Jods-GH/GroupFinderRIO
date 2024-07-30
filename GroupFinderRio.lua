@@ -4,7 +4,8 @@ local CustomNames = C_AddOns.IsAddOnLoaded("CustomNames") and LibStub and LibStu
 ---@param profile table
 ---@return integer? Mainscore
 ---@return integer currentScore
-local function getScoreForRioProfile(profile)
+---@return boolean isMainRole
+local function getScoreForRioProfile(profile, assignedRole)
     if not profile.mythicKeystoneProfile then
         return nil, 0 
     end
@@ -12,9 +13,20 @@ local function getScoreForRioProfile(profile)
         return nil, profile.mythicKeystoneProfile.currentScore
     end
     if (profile.mythicKeystoneProfile.mainCurrentScore and profile.mythicKeystoneProfile.mainCurrentScore>0) and profile.mythicKeystoneProfile.mainCurrentScore> profile.mythicKeystoneProfile.currentScore then
-     return profile.mythicKeystoneProfile.mainCurrentScore, profile.mythicKeystoneProfile.currentScore
+        return profile.mythicKeystoneProfile.mainCurrentScore, profile.mythicKeystoneProfile.currentScore, true
     end
-    return nil, profile.mythicKeystoneProfile.currentScore   
+    if assignedRole then
+        for key,value in pairs(profile.mythicKeystoneProfile.mplusCurrent.roles) do
+            if value[1] == "tank" and assignedRole == "TANK" and value[2] == "full" then
+                return nil, profile.mythicKeystoneProfile.currentScore, true
+            elseif value[1] == "dps" and assignedRole == "DAMAGER" and value[2] == "full" then
+                return nil, profile.mythicKeystoneProfile.currentScore, true
+            elseif value[1] == "healer" and assignedRole == "HEALER" and value[2] == "full" then
+                return nil, profile.mythicKeystoneProfile.currentScore, true
+            end
+        end
+    end
+    return nil, profile.mythicKeystoneProfile.currentScore , false  
 end
 ---comment helper to get the score for the Leader of a searchResult
 ---@param searchResult LfgSearchResultData
@@ -39,7 +51,7 @@ local function getScoreForLeader(searchResult)
 
     if RaiderIO and RaiderIO.GetProfile(leaderFullName,faction) then
         local profile = RaiderIO.GetProfile(leaderFullName,faction)
-        local mainScore, score = getScoreForRioProfile(profile)
+        local mainScore, score = getScoreForRioProfile(profile,nil)
         return  mainScore or 0, score or 0, shortLanguage
     else
         return nil, searchResult.leaderOverallDungeonScore or 0, shortLanguage
@@ -161,6 +173,7 @@ end
 ---@return boolean tank
 ---@return boolean healer
 ---@return boolean damage
+---@return boolean isMainRole
 local function getApplicantInfo(applicantID, numMember)
     local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, factionGroup, raceID, specID = C_LFGList.GetApplicantMemberInfo(applicantID, numMember)
     itemLevel = itemLevel or 0
@@ -172,13 +185,13 @@ local function getApplicantInfo(applicantID, numMember)
     end
     if RaiderIO and RaiderIO.GetProfile(name,factionGroup) then -- check if you can somehow get faction of an application
         local profile = RaiderIO.GetProfile(name,factionGroup)
-        local mainScore, score = getScoreForRioProfile(profile)
+        local mainScore, score, isMainRole = getScoreForRioProfile(profile,assignedRole)
         if dungeonScore and score and dungeonScore>score then
             score = dungeonScore
         end
-        return mainScore, score or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage
+        return mainScore, score or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage, isMainRole
     else
-        return nil, dungeonScore or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage
+        return nil, dungeonScore or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage, true
     end
 end
 
@@ -189,6 +202,7 @@ end
 ---@return number ItemLevel
 ---@return boolean SpecIdsActive
 ---@return boolean CanFit this is an application we cant check any multi asignments cause that calculation will get hardcore expensive with recursive calls etc
+---@return boolean everyoneIsMain if everyone is on his main role or if someone is on alt role
 local function getScoreForApplication(applicationID)
     -- we are calculating the average score and ilvl of a group to sort by
     local applicantInfo = C_LFGList.GetApplicantInfo(applicationID)
@@ -200,9 +214,9 @@ local function getScoreForApplication(applicationID)
     local tankSpots = 1-group.TANK
     local healerSpots = 1-group.HEALER
     local groupExceedsMembers = applicantInfo.numMembers > (dpsSpots + tankSpots + healerSpots)
-
+    local everyoneIsMain = true
     for i= 0,applicantInfo.numMembers do 
-        local applicantMainScore, applicantScore, applicantIlvl, specID, name,_, tank, healer, damage = getApplicantInfo(applicationID,i)
+        local applicantMainScore, applicantScore, applicantIlvl, specID, name,_, tank, healer, damage, isMainRole = getApplicantInfo(applicationID,i)
         if tank and not healer and not damage then
             tankSpots = tankSpots - 1
         elseif not tank and healer and not damage then
@@ -219,23 +233,26 @@ local function getScoreForApplication(applicationID)
         if specID and GFIO.db.profile.spec[specID] then
             specIDs = true
         end
+        if not isMainRole then
+            everyoneIsMain = false
+        end
     end 
     score = score/applicantInfo.numMembers
     ilvl = ilvl/applicantInfo.numMembers
     if groupExceedsMembers then
-        return score, ilvl, specIDs, false
+        return score, ilvl, specIDs, false, everyoneIsMain
     elseif tankSpots < 0 or healerSpots < 0 or dpsSpots < 0 then
-        return score, ilvl, specIDs, false
+        return score, ilvl, specIDs, false, everyoneIsMain
     end
-    return score, ilvl, specIDs, true
+    return score, ilvl, specIDs, true, everyoneIsMain
 end
 ---comment compares two different applicants to sort them by score
 ---@param a number
 ---@param b number
 ---@return boolean
 local function compareApplicants(a,b)
-    local scoreA,ilvlA,specIDsA,CanFitA = getScoreForApplication(a)
-    local scoreB,ilvlB,specIDsB,CanFitB = getScoreForApplication(b)
+    local scoreA,ilvlA,specIDsA,CanFitA, everyoneIsMainA = getScoreForApplication(a)
+    local scoreB,ilvlB,specIDsB,CanFitB, everyoneIsMainB = getScoreForApplication(b)
     if CanFitA and not CanFitB then
         return true
     elseif CanFitB and not CanFitA then
@@ -245,6 +262,14 @@ local function compareApplicants(a,b)
         return true
     elseif specIDsB and not specIDsA then
         return false
+    end
+    local difference = GFIO.db.profile.wrongRoleScoreLimitForSorting or 100
+    if everyoneIsMainA ~= everyoneIsMainB and scoreA-scoreB<difference  and scoreA-scoreB>-difference then
+        if everyoneIsMainA then
+            return true
+        else
+            return false
+        end
     end
     if scoreA == scoreB then
         return GFIO.sortFunc(ilvlA,ilvlB)
@@ -281,7 +306,7 @@ local function getRatingInfoFrame(searchResult)
         ratingInfoFrame.AdditionalInfo:SetJustifyH("LEFT")
 
         ratingInfoFrame.Rating = ratingInfoFrame:CreateFontString("ratingString", "ARTWORK", "GameFontNormalSmall")
-        ratingInfoFrame.Rating:SetSize(40,10)
+        ratingInfoFrame.Rating:SetSize(50,10)
         ratingInfoFrame.Rating:SetPoint("CENTER",ratingInfoFrame,"CENTER")
         ratingInfoFrame.Rating:SetJustifyH("LEFT")
 
@@ -300,7 +325,7 @@ end
 ---@param memberIdx number
 local function updateApplicationListEntry(member, appID, memberIdx)
     local applicantInfo = C_LFGList.GetApplicantInfo(appID)
-    local mainScore, score, itemLevel, specID, name, shortLanguage = getApplicantInfo(appID,memberIdx)
+    local mainScore, score, itemLevel, specID, name, shortLanguage,_,_,_,isMainRole = getApplicantInfo(appID,memberIdx)
     if CustomNames then
         local customName = CustomNames.Get(name)
         if name ~= customName then
@@ -342,14 +367,18 @@ local function updateApplicationListEntry(member, appID, memberIdx)
     ratingInfoFrame:SetParent(member)
     ratingInfoFrame:SetPoint("TOP",member,"TOP")
     ratingInfoFrame:SetPoint("RIGHT",member.RoleIcon1,"LEFT",-10,0)
+    local textAddition = ""
+    if not isMainRole and GFIO.db.profile.useOfWrongRoleHighlight then
+        textAddition  = "\124T135768:0\124t"
+    end
     if mainScore then
-        ratingInfoFrame.Rating:SetText("["..mainScore.."]")
+        ratingInfoFrame.Rating:SetText("["..mainScore.."] "..textAddition)
         ratingInfoFrame.Rating:SetTextColor(getScoreColor(mainScore))
     else
-        ratingInfoFrame.Rating:SetText(score)
+        ratingInfoFrame.Rating:SetText(score.." "..textAddition)
         ratingInfoFrame.Rating:SetTextColor(getScoreColor(score))
     end
-    ratingInfoFrame.Rating:SetPoint("CENTER",member.Rating,"CENTER")
+    ratingInfoFrame.Rating:SetPoint("LEFT",member.Rating,"LEFT")
     member.Rating:Hide()
     if GFIO.db.profile.showNote and applicantInfo.comment and applicantInfo.comment~="" then
         ratingInfoFrame.Note:Show()

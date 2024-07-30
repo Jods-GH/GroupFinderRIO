@@ -28,6 +28,8 @@ end
 
 function GroupFinderRIO:OnEnable()
 	GFIO.createOrShowSpecSelectFrame()
+    --Debug
+    -- DevTool:AddData(RaiderIO.GetProfile("Lemikedh-ragnaros",1),"RioProfile")
 end
 
 function GroupFinderRIO:OnDisable()
