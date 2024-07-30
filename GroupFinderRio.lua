@@ -37,7 +37,7 @@ local function getScoreForLeader(searchResult)
         shortLanguage = GFIO.LANGUAGES[language] or ""
     end
 
-    if RaiderIO.GetProfile(leaderFullName,faction) then
+    if RaiderIO and RaiderIO.GetProfile(leaderFullName,faction) then
         local profile = RaiderIO.GetProfile(leaderFullName,faction)
         local mainScore, score = getScoreForRioProfile(profile)
         return  mainScore or 0, score or 0, shortLanguage
@@ -45,15 +45,40 @@ local function getScoreForLeader(searchResult)
         return nil, searchResult.leaderOverallDungeonScore or 0, shortLanguage
     end
 end
+
+---comment helper to get the color for a score either using RaiderIO coloring or the ingame coloring of wow
+---@param score any
+---@return integer
+---@return integer
+---@return integer
+---@return integer
+local function getScoreColor(score)
+    if RaiderIO then
+        return RaiderIO.GetScoreColor(score)
+    else
+        if score >=480 and score< 960 then
+            return 30/255, 1, 0, 1
+        elseif score >=960 and score< 1600 then
+            return 0,112/255,221/255,1
+        elseif score >=1600 and score< 2400 then
+            return 163/255, 53/255, 238/255, 1
+        elseif score >=2400 then
+            return 1, 128/255, 0, 1
+        else
+            return 1,1,1,1
+        end
+    end
+end
 ---comment helper to wrap a string in the raiderio score color
 ---@param score number
 ---@return string
 local function colorScore(score)
-    local r,g,b,a = RaiderIO.GetScoreColor(score)
+    local r,g,b,a = getScoreColor(score)
     local color = CreateColor(r,g,b,a)
     local colorHexString = color:GenerateHexColor()
     local coloredScore = WrapTextInColorCode(score, colorHexString)
     return coloredScore
+
 end
 
 ---comment hooked to the updateLfgListEntry function to add the score to the group finder list
@@ -145,7 +170,7 @@ local function getApplicantInfo(applicantID, numMember)
         local language = realm and GFIO.REALMS[realm] or ""
         shortLanguage = GFIO.LANGUAGES[language] or ""
     end
-    if RaiderIO.GetProfile(name,factionGroup) then -- check if you can somehow get faction of an application
+    if RaiderIO and RaiderIO.GetProfile(name,factionGroup) then -- check if you can somehow get faction of an application
         local profile = RaiderIO.GetProfile(name,factionGroup)
         local mainScore, score = getScoreForRioProfile(profile)
         if dungeonScore and score and dungeonScore>score then
@@ -319,10 +344,10 @@ local function updateApplicationListEntry(member, appID, memberIdx)
     ratingInfoFrame:SetPoint("RIGHT",member.RoleIcon1,"LEFT",-10,0)
     if mainScore then
         ratingInfoFrame.Rating:SetText("["..mainScore.."]")
-        ratingInfoFrame.Rating:SetTextColor(RaiderIO.GetScoreColor(mainScore))
+        ratingInfoFrame.Rating:SetTextColor(getScoreColor(mainScore))
     else
         ratingInfoFrame.Rating:SetText(score)
-        ratingInfoFrame.Rating:SetTextColor(RaiderIO.GetScoreColor(score))
+        ratingInfoFrame.Rating:SetTextColor(getScoreColor(score))
     end
     ratingInfoFrame.Rating:SetPoint("CENTER",member.Rating,"CENTER")
     member.Rating:Hide()

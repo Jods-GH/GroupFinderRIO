@@ -6,8 +6,7 @@
 ## Author: Jods
 ## X-Curse-Project-ID: 1066197
 ## X-Wago-ID: 56n9wjN9
-## RequiredDeps: RaiderIO
-## OptionalDeps: Ace3, CustomNames
+## OptionalDeps: Ace3, CustomNames, RaiderIO
 ## AddonCompartmentFunc: GroupFinderRIO_AddonCompartmentFunction
 ## IconTexture: Interface\AddOns\GroupFinderRio\Files\GroupFinderRio.tga
 
