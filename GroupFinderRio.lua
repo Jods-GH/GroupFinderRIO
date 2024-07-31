@@ -324,6 +324,11 @@ end
 ---@param appID number
 ---@param memberIdx number
 local function updateApplicationListEntry(member, appID, memberIdx)
+    local entryData = C_LFGList.GetActiveEntryInfo()
+    local activityInfoTable= C_LFGList.GetActivityInfoTable(entryData.activityID)
+    -- could maybe instead show something different we'll see
+    if activityInfoTable.categoryID ~= GROUP_FINDER_CATEGORY_ID_DUNGEONS then return end
+
     local applicantInfo = C_LFGList.GetApplicantInfo(appID)
     local mainScore, score, itemLevel, specID, name, shortLanguage,_,_,_,isMainRole = getApplicantInfo(appID,memberIdx)
     if CustomNames then
