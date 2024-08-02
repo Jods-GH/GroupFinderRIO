@@ -31,6 +31,7 @@ Locales\Locales.lua
 # Data
 Data\SpecList.lua
 Data\Realmlist.lua
+Data\InstanceIDList.lua
 
 # Utils
 Util\UtilFunctions.lua
