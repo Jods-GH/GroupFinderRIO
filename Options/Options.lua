@@ -16,15 +16,15 @@ GFIO.options = {
             return  GFIO.db.profile.sortAscending --Sets value of toggles depending on SavedVariables 
         end,
       },
-      useMainScore = {
-        name = GFIO.getLocalisation("useMainScore"),
-        desc = GFIO.getLocalisation("useMainScoreDescription"),
+      useMainInfo = {
+        name = GFIO.getLocalisation("useMainInfo"),
+        desc = GFIO.getLocalisation("useMainInfoDescription"),
         order = 30,
         width = "full",
         type = "toggle",
-        set = function(info,val)  GFIO.db.profile.useMainScore = val end, --Sets value of SavedVariables depending on toggles
+        set = function(info,val)  GFIO.db.profile.useMainInfo = val end, --Sets value of SavedVariables depending on toggles
         get = function(info)
-            return  GFIO.db.profile.useMainScore --Sets value of toggles depending on SavedVariables 
+            return  GFIO.db.profile.useMainInfo --Sets value of toggles depending on SavedVariables 
         end,
       },
       showLanguage = {
@@ -38,7 +38,18 @@ GFIO.options = {
             return  GFIO.db.profile.showLanguage --Sets value of toggles depending on SavedVariables 
         end,
       },
-
+      addHighestDifficulty = {
+        name = GFIO.getLocalisation("addHighestDifficulty"),
+        desc = GFIO.getLocalisation("addHighestDifficultyDescription"),
+        order = 30,
+        width = "full",
+        type = "toggle",
+        set = function(info,val)  GFIO.db.profile.addHighestDifficulty = val end, --Sets value of SavedVariables depending on toggles
+        get = function(info)
+            return  GFIO.db.profile.addHighestDifficulty --Sets value of toggles depending on SavedVariables 
+        end,
+      },
+      
       applicantView = {
         name = GFIO.getLocalisation("applicantView"),
           type = "group",
@@ -101,8 +112,7 @@ GFIO.options = {
               get = function(info)
                   return  GFIO.db.profile.wrongRoleScoreLimitForSorting  --Sets value of toggles depending on SavedVariables 
               end  
-            },
-            
+            },           
             disableSpecSelector = {
               name = GFIO.getLocalisation("disableSpecSelector"),
               desc = GFIO.getLocalisation("disableSpecSelectorDescription"),
@@ -164,6 +174,28 @@ GFIO.options = {
               set = function(info,val)  GFIO.db.profile.groupNameBeforeScore = val end, --Sets value of SavedVariables depending on toggles
               get = function(info)
                   return  GFIO.db.profile.groupNameBeforeScore --Sets value of toggles depending on SavedVariables 
+              end,
+            },
+            shortenActivityName = {
+              name = GFIO.getLocalisation("shortenActivityName"),
+              desc = GFIO.getLocalisation("shortenActivityNameDescription"),
+              order = 30,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.shortenActivityName = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.shortenActivityName --Sets value of toggles depending on SavedVariables 
+              end,
+            },
+            showInfoInActivityName = {
+              name = GFIO.getLocalisation("showInfoInActivityName"),
+              desc = GFIO.getLocalisation("showInfoInActivityNameDescription"),
+              order = 30,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.showInfoInActivityName = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.showInfoInActivityName --Sets value of toggles depending on SavedVariables 
               end,
             },
           }

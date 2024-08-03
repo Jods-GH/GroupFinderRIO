@@ -9,7 +9,7 @@ local function getScoreForRioProfile(profile, assignedRole)
     if not profile.mythicKeystoneProfile then
         return nil, 0 
     end
-    if not GFIO.db.profile.useMainScore then
+    if not GFIO.db.profile.useMainInfo then
         return nil, profile.mythicKeystoneProfile.currentScore
     end
     if (profile.mythicKeystoneProfile.mainCurrentScore and profile.mythicKeystoneProfile.mainCurrentScore>0) and profile.mythicKeystoneProfile.mainCurrentScore> profile.mythicKeystoneProfile.currentScore then
@@ -221,36 +221,86 @@ end
 local function updateMplusData(searchResult,entry)
     local mainScore,score, shortLanguage = getScoreForLeader(searchResult)
     local orginalText = entry.Name:GetText()
-    local groupName = ""
-    if GFIO.db.profile.showLanguage and shortLanguage and shortLanguage~="" then
-        groupName = shortLanguage.. " "
-    end
-    if GFIO.db.profile.addScoreToGroup and GFIO.db.profile.groupNameBeforeScore then
-        if mainScore and mainScore>score then
-            if GFIO.db.profile.showCurrentScoreInGroup then
-                groupName = orginalText.." "..groupName.. " - ".."["..colorScore(mainScore).."]" 
-            else
-                groupName = orginalText.." "..groupName.. " - ".."["..colorScore(mainScore).."] "..colorScore(score)
-            end
-        elseif GFIO.db.profile.showCurrentScoreInGroup then
-            groupName = orginalText.." "..groupName.. "   -    ".. colorScore(score)
-        elseif GFIO.db.profile.showLanguage then
-            groupName = orginalText.." "..groupName
+    local additionalInfo = ""
+    local languageTag = ""
+    local highestKey = ""
+    local orginalText = WrapTextInColorCode(orginalText, GFIO.Color.BlizzardGameColor)
+    if GFIO.db.profile.showKeyLevel and searchResult.leaderDungeonScoreInfo and 
+      searchResult.leaderDungeonScoreInfo.bestRunLevel and searchResult.leaderDungeonScoreInfo.bestRunLevel >0 then
+        local scoreInfo = searchResult.leaderDungeonScoreInfo
+        local color = scoreInfo.finishedSuccess and GFIO.Color.TimedKeyColor or GFIO.Color.DepletedKeyColor
+        local run = scoreInfo.bestRunLevel or 0
+        local chestPrefix = ""
+        for i= 1, scoreInfo.bestLevelIncrement do
+            chestPrefix= chestPrefix.."+"
         end
-    elseif GFIO.db.profile.addScoreToGroup then
-        if mainScore and mainScore>score then
-            if GFIO.db.profile.showCurrentScoreInGroup then
-                groupName = groupName.."["..colorScore(mainScore).."] "..colorScore(score) .. " - ".. orginalText
+        if chestPrefix~="" then
+            run = chestPrefix.." "..run
+        end
+        local bestrunLevel = WrapTextInColorCode(run, color)
+        highestKey = bestrunLevel
+    end
+    if GFIO.db.profile.showInfoInActivityName and GFIO.db.profile.showLanguage and shortLanguage and shortLanguage~="" then
+        local colorCodedText = WrapTextInColorCode(shortLanguage, GFIO.Color.BlizzardGameColor) -- use game default font color
+        languageTag = colorCodedText.. " "
+    elseif not GFIO.db.profile.showInfoInActivityName and GFIO.db.profile.showLanguage and shortLanguage and shortLanguage~="" then
+        languageTag = shortLanguage.. " "
+    end
+    if GFIO.db.profile.addScoreToGroup then
+        if GFIO.db.profile.useMainInfo and mainScore and score and mainScore>score then
+            if GFIO.db.profile.showCurrentScoreInGroup and score> 0 then
+                additionalInfo = additionalInfo.. "["..colorScore(mainScore).."] "..colorScore(score)
             else
-                groupName = groupName.."["..colorScore(mainScore).."] - ".. orginalText
+                additionalInfo = additionalInfo.."["..colorScore(mainScore).."]" 
             end
-        elseif GFIO.db.profile.showCurrentScoreInGroup then
-            groupName = groupName..colorScore(score) .. " - ".. orginalText
-        elseif GFIO.db.profile.showLanguage then
-            groupName = groupName.." - ".. orginalText
+        elseif score and score>0 then
+            additionalInfo = additionalInfo..colorScore(score)
         end
     end
-    return groupName
+
+    local activityName = entry.ActivityName:GetText()
+    if GFIO.db.profile.shortenActivityName and GFIO.DUNGEONS[searchResult.activityID] then
+        local dungeon = GFIO.DUNGEONS[searchResult.activityID]
+        activityName = dungeon.shortName
+    end
+
+    if GFIO.db.profile.showInfoInActivityName then
+        if additionalInfo ~= "" then
+            entry.ActivityName:SetText(languageTag.." " ..activityName.. " - "..additionalInfo)
+        else
+            entry.ActivityName:SetText(languageTag.." " ..activityName)
+        end
+        if highestKey and highestKey~="" then
+            return "("..highestKey..") - ".. orginalText
+        end
+        return orginalText
+    end
+
+    if activityName ~= "" and activityName ~= entry.ActivityName:GetText() then
+        entry.ActivityName:SetText(languageTag.." "..activityName)
+    elseif languageTag ~= "" then
+        entry.ActivityName:SetText(languageTag.." "..entry.ActivityName:GetText())
+    end
+    if GFIO.db.profile.groupNameBeforeScore then
+        if highestKey and highestKey~="" then
+            if additionalInfo ~= "" then
+                return orginalText.." - ("..highestKey.. ") - "..additionalInfo 
+            else
+                return orginalText.." - ("..highestKey.. ")"
+            end
+        end
+        return orginalText.. " - "..additionalInfo
+    else
+        if highestKey and highestKey~="" then
+            if additionalInfo ~= "" then
+                return "("..highestKey..") "..additionalInfo.." - "..orginalText
+            else
+                return "("..highestKey..") "..orginalText
+            end
+        else
+            return additionalInfo.." - "..orginalText
+        end
+    end
 end
 ---comment
 ---@param searchResult LfgSearchResultData
@@ -259,29 +309,44 @@ end
 local function updateRaidData(searchResult,activityInfoTable,entry)
     local maxBosses, charData, mainData, shortLanguage, difficulty = getProgressForLeader(searchResult)
     local orginalText = entry.Name:GetText()
-    local groupName = ""
-    if GFIO.db.profile.showLanguage and shortLanguage and shortLanguage~="" then
-        groupName = shortLanguage.. " "
+    local additionalInfo = ""
+    if GFIO.db.profile.showInfoInActivityName and GFIO.db.profile.showLanguage and shortLanguage and shortLanguage~="" then
+        local colorCodedText = WrapTextInColorCode(shortLanguage, GFIO.Color.BlizzardGameColor) -- use game default font color
+        additionalInfo = colorCodedText.. " "
+    elseif not GFIO.db.profile.showInfoInActivityName and GFIO.db.profile.showLanguage and shortLanguage and shortLanguage~="" then
+        additionalInfo = shortLanguage.. " "
     end
     if charData and charData.bosskills and charData.bosskills~=0 and maxBosses and maxBosses ~=0 then
-        groupName = groupName .. colorRaidProgress(charData.bosskills.."/"..maxBosses, difficulty).. " "
+        additionalInfo = additionalInfo .. colorRaidProgress(charData.bosskills.."/"..maxBosses, difficulty).. " "
     end
-    if charData and charData.difficulty and difficulty and charData.difficulty ~= difficulty and charData.highestDifficultyKilledBosses~= 0 then
+    if GFIO.db.profile.addHighestDifficulty and charData and charData.difficulty and difficulty and charData.difficulty ~= difficulty and charData.highestDifficultyKilledBosses~= 0 then
         if charData.bosskills ~= 0 then
-            groupName = groupName.. colorRaidProgress("("..charData.highestDifficultyKilledBosses.."/"..maxBosses..")", charData.difficulty).. " "
+            additionalInfo = additionalInfo.. colorRaidProgress("("..charData.highestDifficultyKilledBosses.."/"..maxBosses..")", charData.difficulty).. " "
         else
-            groupName = groupName.. colorRaidProgress(charData.highestDifficultyKilledBosses.."/"..maxBosses, charData.difficulty).. " "    
+            additionalInfo = additionalInfo.. colorRaidProgress(charData.highestDifficultyKilledBosses.."/"..maxBosses, charData.difficulty).. " "    
         end
         
     end
-    if mainData and mainData.difficulty and difficulty and mainData.difficulty >= difficulty and mainData.highestDifficultyKilledBosses~= 0 then
-        groupName = groupName.. colorRaidProgress("["..mainData.highestDifficultyKilledBosses.."/"..maxBosses.."]", mainData.difficulty).. " "
-    elseif mainData and mainData.bosskills and mainData.bosskills~=0 and maxBosses and maxBosses ~=0 then
-        groupName = groupName .. colorRaidProgress("["..mainData.bosskills.."/"..maxBosses.."]",difficulty).. " "
+    if GFIO.db.profile.useMainInfo and GFIO.db.profile.addHighestDifficulty and mainData and mainData.difficulty and difficulty and mainData.difficulty >= difficulty and mainData.highestDifficultyKilledBosses~= 0 then
+        additionalInfo = additionalInfo.. colorRaidProgress("["..mainData.highestDifficultyKilledBosses.."/"..maxBosses.."]", mainData.difficulty).. " "
+    elseif GFIO.db.profile.useMainInfo and mainData and mainData.bosskills and mainData.bosskills~=0 and maxBosses and maxBosses ~=0 then
+        additionalInfo = additionalInfo .. colorRaidProgress("["..mainData.bosskills.."/"..maxBosses.."]",difficulty).. " "
     end
-    return groupName..orginalText
+    local activityName = entry.ActivityName:GetText()
+    if GFIO.db.profile.shortenActivityName and GFIO.RAIDS[searchResult.activityID] then
+        local raid = GFIO.RAIDS[searchResult.activityID]
+        activityName = raid.shortName
+    end
+    if GFIO.db.profile.showInfoInActivityName then
+        entry.ActivityName:SetText(additionalInfo..activityName)
+        return orginalText
+    elseif activityName ~= "" and activityName ~= entry.ActivityName:GetText() then
+        entry.ActivityName:SetText(activityName)
+        return additionalInfo..orginalText
+    else
+        return additionalInfo..orginalText
+    end
 end
-
 
 if GFIO.DEBUG_MODE then
     GFIO.RAIDLIST = {}
@@ -402,25 +467,25 @@ local function compareSearchEntriesRaid(a,b)
     if mainDataA and mainDataB and mainDataA.difficulty >difficultyA and mainDataA.difficulty == mainDataB.difficulty and mainDataA.bosskills == mainDataB.bosskills then
         if charDataA.difficulty ~= charDataB.difficulty then
             return GFIO.sortFunc(charDataA.difficulty, charDataB.difficulty)
-        elseif charDataA.highestDifficultyKilledBosses ~= charDataB.highestDifficultyKilledBosses then
+        elseif GFIO.db.profile.addHighestDifficulty and charDataA.highestDifficultyKilledBosses ~= charDataB.highestDifficultyKilledBosses then
             return GFIO.sortFunc(charDataA.highestDifficultyKilledBosses,charDataB.highestDifficultyKilledBosses)
         else
             return GFIO.sortFunc(charDataA.bosskills,charDataB.bosskills)
         end
     end
-    if mainDataA and charDataA and (mainDataA.difficulty >difficultyA or (mainDataA.difficulty == difficultyA and 
+    if GFIO.db.profile.useMainInfo and mainDataA and charDataA and (mainDataA.difficulty >difficultyA or (mainDataA.difficulty == difficultyA and 
         (mainDataA.highestDifficultyKilledBosses>charDataA.highestDifficultyKilledBosses 
             or mainDataA.bosskills>charDataA.bosskills))) then
         charDataA = mainDataA
     end
-    if mainDataB and charDataB and (mainDataB.difficulty>difficultyB or (mainDataB.difficulty == difficultyB and 
+    if GFIO.db.profile.useMainInfo and mainDataB and charDataB and (mainDataB.difficulty>difficultyB or (mainDataB.difficulty == difficultyB and 
         (mainDataB.highestDifficultyKilledBosses>charDataB.highestDifficultyKilledBosses 
             or mainDataB.bosskills>charDataB.bosskills))) then
         charDataB = mainDataB
     end
     if charDataA.difficulty ~= charDataB.difficulty then
         return GFIO.sortFunc(charDataA.difficulty, charDataB.difficulty)
-    elseif charDataA.highestDifficultyKilledBosses ~= charDataB.highestDifficultyKilledBosses then
+    elseif GFIO.db.profile.addHighestDifficulty and charDataA.highestDifficultyKilledBosses ~= charDataB.highestDifficultyKilledBosses then
         return GFIO.sortFunc(charDataA.highestDifficultyKilledBosses,charDataB.highestDifficultyKilledBosses)
     else
         return GFIO.sortFunc(charDataA.bosskills,charDataB.bosskills)
@@ -488,7 +553,7 @@ end
 ---@param applicantID any
 ---@param numMember any
 ---@param entryData LfgEntryData
----@return integer maxBosses
+---@return integer? maxBosses
 ---@return bossData? charData
 ---@return bossData? mainData
 ---@return number itemLevel
@@ -642,9 +707,9 @@ local function getRatingInfoFrame(searchResult)
     end
 end
 ---comment helper to update an application for dungeons
----@param member any
----@param appID any
----@param memberIdx any
+---@param member frame
+---@param appID integer
+---@param memberIdx integer
 local function updateApplicationForDungeons(member, appID, memberIdx)
     local applicantInfo = C_LFGList.GetApplicantInfo(appID)
     local mainScore, score, itemLevel, specID, name, shortLanguage,_,_,_,isMainRole = getApplicantInfoForKeys(appID,memberIdx)
@@ -663,21 +728,22 @@ local function updateApplicationForDungeons(member, appID, memberIdx)
     if GFIO.db.profile.showLanguage and shortLanguage and shortLanguage~="" then
         additionalInfo = shortLanguage
     end
-    if (GFIO.db.profile.showKeyLevel) then
+    if (GFIO.db.profile.showKeyLevel ) then
         local entryData = C_LFGList.GetActiveEntryInfo()
         local bestDungeonScoreForListing = C_LFGList.GetApplicantDungeonScoreForListing(appID, memberIdx, entryData.activityID)
-        local color = "FFFF0000"
-        if (bestDungeonScoreForListing.finishedSuccess) then
-            color = "FF33FF00"
+        if bestDungeonScoreForListing and bestDungeonScoreForListing.bestRunLevel and bestDungeonScoreForListing.bestRunLevel >0 then
+            local color = bestDungeonScoreForListing.finishedSuccess and GFIO.Color.TimedKeyColor or GFIO.Color.DepletedKeyColor
+            local run = bestDungeonScoreForListing.bestRunLevel or 0
+            local chestPrefix = ""
+            for i= 1, bestDungeonScoreForListing.bestLevelIncrement do
+                chestPrefix= chestPrefix.."+"
+            end
+            if chestPrefix ~= "" then
+                run = chestPrefix.." "..run
+            end
+            local bestrunLevel = WrapTextInColorCode(run, color)
+            additionalInfo = additionalInfo.." "..bestrunLevel
         end
-        local run = bestDungeonScoreForListing.bestRunLevel or 0
-        local chestPrefix = ""
-        for i= 1, bestDungeonScoreForListing.bestLevelIncrement do
-            chestPrefix= chestPrefix.."+"
-        end
-        run = chestPrefix.." "..run
-        local bestrunLevel = WrapTextInColorCode(run, color)
-        additionalInfo = additionalInfo.." "..bestrunLevel
     end
     if additionalInfo ~= "" then
         ratingInfoFrame.AdditionalInfo:SetPoint("BOTTOM",member,"BOTTOM",0,0)
@@ -710,6 +776,10 @@ local function updateApplicationForDungeons(member, appID, memberIdx)
     end
     ratingInfoFrame:Show()
 end
+---comment helper to update an application for raids
+---@param member frame
+---@param appID integer
+---@param memberIdx integer
 local function updateApplicationForRaids(member, appID, memberIdx) 
     local applicantInfo = C_LFGList.GetApplicantInfo(appID)
     local entryData = C_LFGList.GetActiveEntryInfo()
@@ -735,7 +805,7 @@ local function updateApplicationForRaids(member, appID, memberIdx)
         if charData and charData.bosskills and charData.bosskills~=0 and maxBosses and maxBosses ~=0 then
             additionalInfo = additionalInfo .. colorRaidProgress(charData.bosskills.."/"..maxBosses,difficulty).. " "
         end
-        if charData and charData.difficulty and difficulty and charData.difficulty ~= difficulty and charData.highestDifficultyKilledBosses~= 0 then
+        if GFIO.db.profile.addHighestDifficulty and charData and charData.difficulty and difficulty and charData.difficulty ~= difficulty and charData.highestDifficultyKilledBosses~= 0 then
             if charData.bosskills ~= 0 then
                 additionalInfo = additionalInfo.. colorRaidProgress("("..charData.highestDifficultyKilledBosses.."/"..maxBosses..")", charData.difficulty).. " "
             else
@@ -743,9 +813,9 @@ local function updateApplicationForRaids(member, appID, memberIdx)
             end
             
         end
-        if mainData and mainData.difficulty and difficulty and mainData.difficulty >= difficulty and mainData.highestDifficultyKilledBosses~= 0 then
+        if GFIO.db.profile.useMainInfo and GFIO.db.profile.addHighestDifficulty and mainData and mainData.difficulty and difficulty and mainData.difficulty >= difficulty and mainData.highestDifficultyKilledBosses~= 0 then
             additionalInfo = additionalInfo.. colorRaidProgress("["..mainData.highestDifficultyKilledBosses.."/"..maxBosses.."]", mainData.difficulty).. " "
-        elseif mainData and mainData.bosskills and mainData.bosskills~=0 and maxBosses and maxBosses ~=0 then
+        elseif GFIO.db.profile.useMainInfo and mainData and mainData.bosskills and mainData.bosskills~=0 and maxBosses and maxBosses ~=0 then
             additionalInfo = additionalInfo .. colorRaidProgress("["..mainData.bosskills.."/"..maxBosses.."]",difficulty).. " "
         end
     end

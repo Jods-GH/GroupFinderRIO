@@ -4,8 +4,8 @@ local L = AceLocale:NewLocale(appName, "enUS", true)
 
 if L then
     L["AccessOptionsMessage"] = "Access the options via /gfio"
-    L["useMainScore"] = "Use Main Score"
-    L["useMainScoreDescription"] = "Use the Main Score instead of the current Score for display and sort"
+    L["useMainInfo"] = "Use Main Info"
+    L["useMainInfoDescription"] = "Use the Progress or Score info of the main instead of the current Score for display and sort (if available)"
     L["sortAscending"] = "Sort Ascending"
     L["sortAscendingDescription"] = "Sort the list in Ascending order instead of descending"
     L["enableSpecPriority"] = "Enable Spec Priority"
@@ -34,6 +34,11 @@ if L then
     L["useOfWrongRoleHighlightDescription"] = "Highlights the Spec Icon in the Application View if the Applicant is not using the Role with the highest Score"
     L["wrongRoleScoreLimitForSorting"] = "Wrong Role Score Limit for Sorting"
     L["wrongRoleScoreLimitForSortingDescription"] = "The Score Limit for the Sorting Offroles behind mainroles. If set to 0 will always sort mainrole before offrole. If set to 5000 will always ignore main or offrole and only sort by score"
-    
+    L["addHighestDifficulty"] = "Add Highest Difficulty"
+    L["addHighestDifficultyDescription"] = "Add the highest completed difficulty (Either keylevel or Raidprogress)"
+    L["shortenActivityName"] = "Shorten Activity Name"
+    L["shortenActivityNameDescription"] = "Shorten the Activity Name in the Group View"
+    L["showInfoInActivityName"] = "Show Info in Activity Name"
+    L["showInfoInActivityNameDescription"] = "Show information in the Activity Name in the Group View"
     GFIO.localisation = L
 end
