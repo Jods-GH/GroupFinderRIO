@@ -52,6 +52,23 @@ GFIO.RAIDS = {
 }
 
 GFIO.DUNGEONS = {
+	--TODO FIX THESE ↓
+	[659] = {
+		id = "", -- Siege Of Boralus
+		difficulty = 4, -- Mythic plus
+		shortName = "SOB (M+)"
+	},
+	[703] = {
+		id = "", -- Mists of Tirna scithe
+		difficulty = 4, -- Mythic plus
+		shortName = "MOTS (M+)"
+	},
+	[713] = {
+		id = "", -- Necrotic Wake
+		difficulty = 4, -- Mythic plus
+		shortName = "NW (M+)"
+	},
+	--TODO FIX THESE ↑
 	[1157] = {
 		id = 14032, -- Academy
 		difficulty = 1, -- Normal
@@ -212,6 +229,63 @@ GFIO.DUNGEONS = {
 		difficulty = 4, -- Mythic plus
 		shortName = "ULD (M+)"
 	},
+	--TODO FIX THESE ↓
+	[1276] = {
+		id = "", -- Darkflame cleft
+		difficulty = 2, -- Heroic
+		shortName = ""
+	},
+	[1279] = {
+		id = "", -- Ara Kara
+		difficulty = 2, -- Heroic
+		shortName = ""
+	},
+	[1284] = {
+		id = "", -- Ara Kara
+		difficulty = 4, -- Mythic plus
+		shortName = ""
+	},
+	[1287] = {
+		id = "", -- Stone Vault
+		difficulty = 4, -- Mythic plus
+		shortName = ""
+	},
+	[1290] = {
+		id = "", -- Grim Batol
+		difficulty = 4, -- Mythic plus
+		shortName = ""
+	},
+	[1291] = {
+		id = "", -- The Dawnbreaker
+		difficulty = 3, -- Mythic 
+		shortName = ""
+	},
+	[1292] = {
+		id = "", -- The StoneVault
+		difficulty = 3, -- Mythic 
+		shortName = ""
+	},
+	[1293] = {
+		id = "", -- City of Threads
+		difficulty = 3, -- Mythic 
+		shortName = ""
+	},
+	[1309] = {
+		id = "", -- The Rookery
+		difficulty = 3, -- Heroic 
+		shortName = ""
+	},
+	[1508] = {
+		id = "", -- Cinderbrew Meadery
+		difficulty = 3, -- Heroic 
+		shortName = ""
+	},
+	[1511] = {
+		id = "", -- Priory of the Sacred flame
+		difficulty = 3, -- Heroic 
+		shortName = ""
+	},
+	--TODO FIX THESE ↑
 }
 
 GFIO.ACTIVITY_ORDER = {

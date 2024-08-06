@@ -64,7 +64,7 @@ local function getProgressForRioProfile(profile, instanceID, activeDifficulty)
         end
     end
     for _,raid in pairs(profile.raidProfile.raidProgress) do
-        if raid.raid.id == instanceID then
+        if raid.raid.id == instanceID then -- this actually breaks in awakened seasons we might need to do sth about that
             bosscount = raid.raid.bossCount
             local kills = 0 
             for _, value in pairs (raid.progress) do
@@ -378,7 +378,6 @@ local function updateLfgListEntry(entry, ...)
             DevTool:AddData(GFIO.RAIDLIST,"RAIDLIST")
             return
         elseif GFIO.RAIDLIST[searchResult.activityID] ~= activityInfoTable.fullName then
-            print("Warning names not consistent")
             print(GFIO.RAIDLIST[searchResult.activityID])
             print(activityInfoTable.fullName)
             return
@@ -575,7 +574,6 @@ local function getApplicantInfoForRaid(applicantID, numMember, entryData)
     if RaiderIO and RaiderIO.GetProfile(name,factionGroup) then
         local profile = RaiderIO.GetProfile(name,factionGroup)
         local raidZone = GFIO.RAIDS[entryData.activityID]
-
         local maxBosses, charData, mainData = getProgressForRioProfile(profile, raidZone.id , raidZone.difficulty)
         return maxBosses, charData, mainData, itemLevel, specID, name, shortLanguage, tank, healer, damage
     else
@@ -637,7 +635,7 @@ end
 ---@param a number
 ---@param b number
 ---@return boolean
-local function compareApplicants(a,b)
+local function compareApplicantsDungeons(a,b)
     local scoreA,ilvlA,specIDsA,CanFitA, everyoneIsMainA = getScoreForApplication(a)
     local scoreB,ilvlB,specIDsB,CanFitB, everyoneIsMainB = getScoreForApplication(b)
     if CanFitA and not CanFitB then
@@ -663,6 +661,108 @@ local function compareApplicants(a,b)
     end
     return GFIO.sortFunc(scoreA,scoreB) 
 end
+---comment helper to get the raidProgress for an application
+---@param applicationID number
+---@return number avgKilledBosses
+---@return number avgDifficulty
+---@return number ItemLevel
+---@return boolean SpecIdsActive
+---@return boolean CanFit this is an application we cant check any multi asignments cause that calculation will get hardcore expensive with recursive calls etc
+local function getProgressForApplication(applicationID)
+    -- we are calculating the average score and ilvl of a group to sort by
+    local applicantInfo = C_LFGList.GetApplicantInfo(applicationID)
+    local entryData = C_LFGList.GetActiveEntryInfo()
+    local raidZone = GFIO.RAIDS[entryData.activityID]
+    if not raidZone then
+        return 0,0,0, false, false
+    end
+    local difficulty = raidZone.difficulty
+    local killedBosses = 0
+    local ilvl = 0
+    local specIDs = false
+    local group = GetGroupMemberCounts()
+    local dpsSpots = 3-group.DAMAGER
+    local tankSpots = 1-group.TANK
+    local healerSpots = 1-group.HEALER
+    local groupExceedsMembers = applicantInfo.numMembers > (dpsSpots + tankSpots + healerSpots)
+    local maxAvailableBosses
+    for i= 0,applicantInfo.numMembers do 
+        local maxBosses,charData, mainData, itemLevel, specID, name, shortLanguage, tank, healer, damage = getApplicantInfoForRaid(applicationID,i,entryData)
+        if not maxAvailableBosses then
+            maxAvailableBosses = maxBosses
+        end
+        if tank and not healer and not damage then
+            tankSpots = tankSpots - 1
+        elseif not tank and healer and not damage then
+            healerSpots = healerSpots - 1
+        elseif not tank and not healer and damage then
+            dpsSpots = dpsSpots - 1
+        end
+        if mainData and mainData.difficulty and charData and charData.difficulty and mainData.difficulty > charData.difficulty or 
+            mainData and charData and mainData.difficulty == charData.difficulty and mainData.highestDifficultyKilledBosses > charData.highestDifficultyKilledBosses or
+            mainData and charData and mainData.difficulty == charData.difficulty and mainData.bosskills > charData.bosskills then
+            charData = mainData
+        end
+        if charData then
+            if charData.difficulty > raidZone.difficulty then
+                killedBosses = killedBosses + charData.highestDifficultyKilledBosses*charData.difficulty
+            else
+                killedBosses = killedBosses + charData.bosskills*difficulty
+            end
+        end
+        ilvl = ilvl + itemLevel
+        if specID and GFIO.db.profile.spec[specID] then
+            specIDs = true
+        end
+    end 
+    if not maxAvailableBosses then
+        if groupExceedsMembers then
+            return 0, 0, ilvl, specIDs, false
+        elseif tankSpots < 0 or healerSpots < 0 or dpsSpots < 0 then
+            return 0, 0, ilvl, specIDs, false
+        else
+            return 0, 0, ilvl, specIDs, true
+        end
+    end
+    -- this looks like magic but what we actually do is we just add all the killed bosses multiplied by their difficulty. 
+    -- This means if you kill the last boss of a 8/8 raid on mythic it's "worth" 24 kills. 
+    -- If we now want to go the other direction we divide total number of kills by max bosses 
+    -- to get difficulry and use modulo to get amount of bosses killed on said difficulty.
+    local avgKilledBosses = killedBosses/applicantInfo.numMembers % maxAvailableBosses
+    local avgDifficulty = floor(killedBosses/applicantInfo.numMembers/maxAvailableBosses)
+    ilvl = ilvl/applicantInfo.numMembers
+    if groupExceedsMembers then
+        return avgKilledBosses, avgDifficulty, ilvl, specIDs, false
+    elseif tankSpots < 0 or healerSpots < 0 or dpsSpots < 0 then
+        return avgKilledBosses, avgDifficulty, ilvl, specIDs, false
+    end
+    return avgKilledBosses, avgDifficulty, ilvl, specIDs, true
+end
+---comment compares two different applicants to sort them by raid progress
+---@param a number
+---@param b number
+---@return boolean
+local function compareApplicantsRaid(a,b)
+    local avgKilledBossesA, avgDifficultyA, ilvlA, specIDsA, CanFitA  = getProgressForApplication(a)
+    local avgKilledBossesB, avgDifficultyB, ilvlB, specIDsB, CanFitB  = getProgressForApplication(b)
+    if CanFitA and not CanFitB then
+        return true
+    elseif CanFitB and not CanFitA then
+        return false
+    end
+    if specIDsA and not specIDsB then
+        return true
+    elseif specIDsB and not specIDsA then
+        return false
+    end
+    if avgDifficultyA ~= avgDifficultyB then
+        return GFIO.sortFunc(avgDifficultyA, avgDifficultyB)
+    end
+    if avgKilledBossesA == avgKilledBossesB then
+        return GFIO.sortFunc(ilvlA,ilvlB)
+    end
+    return GFIO.sortFunc(avgKilledBossesA,avgKilledBossesB) 
+end
 ---comment hooked to the sortApplicants function to calls compareApplicants to sort the applicants
 ---@param applicants table
 local function sortApplications(applicants)
@@ -671,9 +771,13 @@ local function sortApplications(applicants)
     end
     local entryData = C_LFGList.GetActiveEntryInfo()
     local activityInfoTable= C_LFGList.GetActivityInfoTable(entryData.activityID)
-    if activityInfoTable.categoryID ~= GROUP_FINDER_CATEGORY_ID_DUNGEONS then return end
-    table.sort(applicants, compareApplicants)
+    if activityInfoTable.categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then 
+        table.sort(applicants, compareApplicantsDungeons)
+    elseif activityInfoTable.categoryID == GROUP_FINDER_CATEGORY_ID_RAIDS then
+        table.sort(applicants, compareApplicantsRaid)
+    end
 end
+GFIO.sortApplications = sortApplications
 local groupFinderRioRatingInfoFrames = {}
 ---comment helper to create or get the ratingInfoFrame for a searchResult
 ---@param searchResult any
@@ -751,6 +855,8 @@ local function updateApplicationForDungeons(member, appID, memberIdx)
         ratingInfoFrame.AdditionalInfo:SetPoint("RIGHT",member.RoleIcon1,"RIGHT",2,0)
         ratingInfoFrame.AdditionalInfo:SetText(additionalInfo) 
         member.Name:SetPoint("TOP",member,"TOP",0,0)
+    else
+        ratingInfoFrame.AdditionalInfo:SetText("") 
     end
     ratingInfoFrame:SetParent(member)
     ratingInfoFrame:SetPoint("TOP",member,"TOP")
@@ -825,6 +931,8 @@ local function updateApplicationForRaids(member, appID, memberIdx)
         ratingInfoFrame.AdditionalInfo:SetPoint("RIGHT",member.RoleIcon1,"RIGHT",2,0)
         ratingInfoFrame.AdditionalInfo:SetText(additionalInfo) 
         member.Name:SetPoint("TOP",member,"TOP",0,0)
+    else
+        ratingInfoFrame.AdditionalInfo:SetText("") 
     end
     ratingInfoFrame:SetParent(member)
     ratingInfoFrame:SetPoint("TOP",member,"TOP")
@@ -861,6 +969,5 @@ hooksecurefunc("LFGListSearchEntry_Update", updateLfgListEntry);
 hooksecurefunc("LFGListSearchPanel_UpdateResults",sortSearchResults);
 hooksecurefunc("LFGListUtil_SortApplicants", sortApplications);
 hooksecurefunc("LFGListApplicationViewer_UpdateApplicantMember", updateApplicationListEntry);
-
 
 
