@@ -26,6 +26,7 @@ local function createSpecToggle(specID, info, frame)
         else
             specToggle.image:SetDesaturated(true)
         end
+        C_LFGList.RefreshApplicants()
     end)
 
 end
@@ -125,6 +126,7 @@ local function createSectionToggle(frame, parentGroup, iconId)
 
             end
         end
+        C_LFGList.RefreshApplicants()
         specsToggle.image:SetDesaturated(isactive)
     end)
 end
