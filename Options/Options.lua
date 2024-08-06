@@ -65,15 +65,15 @@ GFIO.options = {
                   return  GFIO.db.profile.showNote --Sets value of toggles depending on SavedVariables 
               end,
             },
-            showKeyLevel = {
-              name = GFIO.getLocalisation("showKeyLevel"),
-              desc = GFIO.getLocalisation("showKeyLevelDescription"),
+            showKeyLevelApplicants = {
+              name = GFIO.getLocalisation("showKeyLevelApplicants"),
+              desc = GFIO.getLocalisation("showKeyLevelApplicantsDescription"),
               order = 30,
               width = "full",
               type = "toggle",
-              set = function(info,val)  GFIO.db.profile.showKeyLevel = val end, --Sets value of SavedVariables depending on toggles
+              set = function(info,val)  GFIO.db.profile.showKeyLevelApplicants = val end, --Sets value of SavedVariables depending on toggles
               get = function(info)
-                  return  GFIO.db.profile.showKeyLevel --Sets value of toggles depending on SavedVariables 
+                  return  GFIO.db.profile.showKeyLevelApplicants --Sets value of toggles depending on SavedVariables 
               end,
             },
             sortApplicants = {
@@ -185,6 +185,17 @@ GFIO.options = {
               set = function(info,val)  GFIO.db.profile.shortenActivityName = val end, --Sets value of SavedVariables depending on toggles
               get = function(info)
                   return  GFIO.db.profile.shortenActivityName --Sets value of toggles depending on SavedVariables 
+              end,
+            },
+            showKeyLevelLeader = {
+              name = GFIO.getLocalisation("showKeyLevelLeader"),
+              desc = GFIO.getLocalisation("showKeyLevelLeaderDescription"),
+              order = 30,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.showKeyLevelLeader = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.showKeyLevelLeader --Sets value of toggles depending on SavedVariables 
               end,
             },
             showInfoInActivityName = {
