@@ -225,7 +225,7 @@ local function updateMplusData(searchResult,entry)
     local languageTag = ""
     local highestKey = ""
     local orginalText = WrapTextInColorCode(orginalText, GFIO.Color.BlizzardGameColor)
-    if GFIO.db.profile.showKeyLevel and searchResult.leaderDungeonScoreInfo and 
+    if GFIO.db.profile.showKeyLevelLeader and searchResult.leaderDungeonScoreInfo and 
       searchResult.leaderDungeonScoreInfo.bestRunLevel and searchResult.leaderDungeonScoreInfo.bestRunLevel >0 then
         local scoreInfo = searchResult.leaderDungeonScoreInfo
         local color = scoreInfo.finishedSuccess and GFIO.Color.TimedKeyColor or GFIO.Color.DepletedKeyColor
@@ -832,7 +832,7 @@ local function updateApplicationForDungeons(member, appID, memberIdx)
     if GFIO.db.profile.showLanguage and shortLanguage and shortLanguage~="" then
         additionalInfo = shortLanguage
     end
-    if (GFIO.db.profile.showKeyLevel ) then
+    if (GFIO.db.profile.showKeyLevelApplicants) then
         local entryData = C_LFGList.GetActiveEntryInfo()
         local bestDungeonScoreForListing = C_LFGList.GetApplicantDungeonScoreForListing(appID, memberIdx, entryData.activityID)
         if bestDungeonScoreForListing and bestDungeonScoreForListing.bestRunLevel and bestDungeonScoreForListing.bestRunLevel >0 then
