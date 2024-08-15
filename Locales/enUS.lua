@@ -42,5 +42,8 @@ if L then
     L["shortenActivityNameDescription"] = "Shorten the Activity Name in the Group View"
     L["showInfoInActivityName"] = "Show Info in Activity Name"
     L["showInfoInActivityNameDescription"] = "Show information in the Activity Name in the Group View"
+    L["oneClickSignup"] = "One Click Signup"
+    L["oneClickSignupDescription"] = "Sign up for a group with one click"
+    L["OneClickSignupNotAvailable"] = "One Click Signup is not available with Premades Group Filter enabled please disable the option and use Premades Group Filters setting instead"
     GFIO.localisation = L
 end

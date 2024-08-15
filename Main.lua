@@ -23,6 +23,11 @@ function GroupFinderRIO:OnInitialize()
     AceConfigDialog:AddToBlizOptions(appName, appName)
     self:RegisterChatCommand("gfio", "SlashCommand")
 	self:RegisterChatCommand("GFIO", "SlashCommand")
+    if not C_AddOns.IsAddOnLoaded("PremadeGroupsFilter") then
+        GFIO.hookFunc() -- hooking the LFGListSearchEntry_OnClick function if enabled and premades group filter is disabled
+    elseif GFIO.db.profile.oneClickSignup then
+        error(GFIO.getLocalisation("OneClickSignupNotAvailable"))
+    end
 end
 
 

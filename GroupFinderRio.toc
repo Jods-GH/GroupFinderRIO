@@ -42,6 +42,9 @@ Util\SpecSortFrame.lua
 Options\OptionDefaults.lua
 Options\Options.lua
 
+#Modules
+Modules\OneClickSign.lua
+
 # Core
 Main.lua
 GroupFinderRio.lua

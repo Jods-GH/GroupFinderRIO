@@ -209,6 +209,17 @@ GFIO.options = {
                   return  GFIO.db.profile.showInfoInActivityName --Sets value of toggles depending on SavedVariables 
               end,
             },
+            oneClickSignup = {
+              name = GFIO.getLocalisation("oneClickSignup"),
+              desc = GFIO.getLocalisation("oneClickSignupDescription"),
+              order = 30,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.oneClickSignup = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.oneClickSignup --Sets value of toggles depending on SavedVariables 
+              end,
+            },
           }
         }
   }

@@ -18,6 +18,7 @@ GFIO.OptionDefaults = {
 		addHighestDifficulty = true,
 		shortenActivityName = true,
 		showInfoInActivityName = true,
+		oneClickSignup = false,
 		wrongRoleScoreLimitForSorting = 100,
 		spec = {
 			[62] = true, -- arcane
