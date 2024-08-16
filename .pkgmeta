@@ -10,4 +10,5 @@ externals:
     Libs/AceDB-3.0:              https://repos.curseforge.com/wow/ace3/trunk/AceDB-3.0
     Libs/AceDBOptions-3.0:       https://repos.curseforge.com/wow/ace3/trunk/AceDBOptions-3.0
     Libs/AceLocale-3.0:          https://repos.curseforge.com/wow/ace3/trunk/AceLocale-3.0
+    libs/AceConsole-3.0:         https://repos.wowace.com/wow/ace3/trunk/AceConsole-3.0
     
