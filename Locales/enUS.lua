@@ -45,5 +45,19 @@ if L then
     L["oneClickSignup"] = "One Click Signup"
     L["oneClickSignupDescription"] = "Sign up for a group with one click"
     L["OneClickSignupNotAvailable"] = "One Click Signup is not available with Premades Group Filter enabled please disable the option and use Premades Group Filters setting instead"
+    L["highest"] = "Highest Keylevel"
+    L["twenty"] = "20+"
+    L["fifteen"] = "15+"
+    L["ten"] = "10+"
+    L["five"] = "5+"
+    L["Disable"] = "Disabled"
+    L["showTimedKeys"] = "Show Timed Keys"
+    L["showTimedKeysDescription"] = "Show the amount of the timed keys above a certain threshhold in the Applicant View"
+    L["showRaceIconDescription"] = "Show a race icon next to the name of the applicant"
+    L["showRaceIcon"] = "Show race Icon"
+    
+    
+    
+    
     GFIO.localisation = L
 end

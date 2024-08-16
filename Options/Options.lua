@@ -87,32 +87,6 @@ GFIO.options = {
                   return  GFIO.db.profile.sortApplicants --Sets value of toggles depending on SavedVariables 
               end,
             },
-            useOfWrongRoleHighlight = {
-              name = GFIO.getLocalisation("useOfWrongRoleHighlight"),
-              desc = GFIO.getLocalisation("useOfWrongRoleHighlightDescription"),
-              order = 30,
-              width = "full",
-              type = "toggle",
-              set = function(info,val)  GFIO.db.profile.useOfWrongRoleHighlight = val end, --Sets value of SavedVariables depending on toggles
-              get = function(info)
-                  return  GFIO.db.profile.useOfWrongRoleHighlight --Sets value of toggles depending on SavedVariables 
-              end,
-            },
-            wrongRoleScoreLimitForSorting= {
-              name = GFIO.getLocalisation("wrongRoleScoreLimitForSorting"),
-              desc = GFIO.getLocalisation("wrongRoleScoreLimitForSortingDescription"),
-              order = 31,
-              type = "range",
-              softMin = 0,
-              softMax = 5000,
-              bigStep = 1,
-              set = function(info,val)  
-                GFIO.db.profile.wrongRoleScoreLimitForSorting = val
-               end, --Sets value of SavedVariables depending on toggles
-              get = function(info)
-                  return  GFIO.db.profile.wrongRoleScoreLimitForSorting  --Sets value of toggles depending on SavedVariables 
-              end  
-            },           
             disableSpecSelector = {
               name = GFIO.getLocalisation("disableSpecSelector"),
               desc = GFIO.getLocalisation("disableSpecSelectorDescription"),
@@ -124,7 +98,62 @@ GFIO.options = {
                   return  GFIO.db.profile.disableSpecSelector --Sets value of toggles depending on SavedVariables 
               end,
             },
-            
+            showRaceIcon = {
+              name = GFIO.getLocalisation("showRaceIcon"),
+              desc = GFIO.getLocalisation("showRaceIconDescription"),
+              order = 30,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.showRaceIcon = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.showRaceIcon --Sets value of toggles depending on SavedVariables 
+              end,
+            },
+            showTimedKeys= {
+              name = GFIO.getLocalisation("showTimedKeys"),
+              desc = GFIO.getLocalisation("showTimedKeysDescription"),
+              order = 35,
+              type = "select",
+              values = {
+                [false] = GFIO.getLocalisation("Disable"),
+                [5] = GFIO.getLocalisation("five"),
+                [10] = GFIO.getLocalisation("ten"),
+                [15] = GFIO.getLocalisation("fifteen"),
+                [20] = GFIO.getLocalisation("twenty"),
+                [100] = GFIO.getLocalisation("highest"),
+                
+              },
+              set = function(info,val)  GFIO.db.profile.showTimedKeys = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.showTimedKeys--Sets value of toggles depending on SavedVariables 
+              end
+            },
+            useOfWrongRoleHighlight = {
+              name = GFIO.getLocalisation("useOfWrongRoleHighlight"),
+              desc = GFIO.getLocalisation("useOfWrongRoleHighlightDescription"),
+              order = 40,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.useOfWrongRoleHighlight = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.useOfWrongRoleHighlight --Sets value of toggles depending on SavedVariables 
+              end,
+            },
+            wrongRoleScoreLimitForSorting= {
+              name = GFIO.getLocalisation("wrongRoleScoreLimitForSorting"),
+              desc = GFIO.getLocalisation("wrongRoleScoreLimitForSortingDescription"),
+              order = 41,
+              type = "range",
+              softMin = 0,
+              softMax = 5000,
+              bigStep = 1,
+              set = function(info,val)  
+                GFIO.db.profile.wrongRoleScoreLimitForSorting = val
+               end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.wrongRoleScoreLimitForSorting  --Sets value of toggles depending on SavedVariables 
+              end  
+            },           
                   
           }
       },

@@ -515,6 +515,26 @@ local function sortSearchResults(results)
     DevTool:AddData(LFGListFrame.SearchPanel,"searchpanel")
     ]]
 end
+---comment helper to get the timed keys from a RaiderIo profile
+---@param profile any
+---@return timedKeystonesList
+local function getTimedKeys(profile)
+    ---@class timedKeystonesList
+    ---@field fivePlus number
+    ---@field tenPlus number
+    ---@field fifteenPlus number
+    ---@field twentyPlus number
+    ---@return table
+    local keys = {}
+    if not profile.mythicKeystoneProfile then
+        return keys
+    end
+    keys.fivePlus = profile.mythicKeystoneProfile.keystoneFivePlus or 0
+    keys.tenPlus = profile.mythicKeystoneProfile.keystoneTenPlus or 0
+    keys.fifteenPlus = profile.mythicKeystoneProfile.keystoneFifteenPlus or 0
+    keys.twentyPlus = profile.mythicKeystoneProfile.keystoneTwentyPlus or 0
+    return keys
+end
 ---comment helper to get the score for an applicant
 ---@param applicantID number
 ---@param numMember number
@@ -528,6 +548,8 @@ end
 ---@return boolean healer
 ---@return boolean damage
 ---@return boolean isMainRole
+---@return number raceID
+---@return table timedKeystonesList
 local function getApplicantInfoForKeys(applicantID, numMember)
     local name, class, localizedClass, level, itemLevel, honorLevel, tank, healer, damage, assignedRole, relationship, dungeonScore, pvpItemLevel, factionGroup, raceID, specID = C_LFGList.GetApplicantMemberInfo(applicantID, numMember)
     itemLevel = itemLevel or 0
@@ -543,9 +565,9 @@ local function getApplicantInfoForKeys(applicantID, numMember)
         if dungeonScore and score and dungeonScore>score then
             score = dungeonScore
         end
-        return mainScore, score or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage, isMainRole
+        return mainScore, score or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage, isMainRole, raceID, getTimedKeys(profile)
     else
-        return nil, dungeonScore or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage, true
+        return nil, dungeonScore or 0, itemLevel, specID, name, shortLanguage, tank, healer, damage, true, raceID, nil
     end
 end
 ---comment
@@ -816,12 +838,16 @@ end
 ---@param memberIdx integer
 local function updateApplicationForDungeons(member, appID, memberIdx)
     local applicantInfo = C_LFGList.GetApplicantInfo(appID)
-    local mainScore, score, itemLevel, specID, name, shortLanguage,_,_,_,isMainRole = getApplicantInfoForKeys(appID,memberIdx)
+    local mainScore, score, itemLevel, specID, name, shortLanguage,_,_,_,isMainRole, raceID, keystoneList = getApplicantInfoForKeys(appID,memberIdx)
     if CustomNames then
         local customName = CustomNames.Get(name)
         if name ~= customName then
             member.Name:SetText(customName)
         end
+    end
+    if raceID and GFIO.db.profile.showRaceIcon then   
+        local raceInfo = C_CreatureInfo.GetRaceInfo(raceID)
+        member.Name:SetText(member.Name:GetText().." "..CreateAtlasMarkup("raceicon-"..raceInfo.clientFileString.."-female", 16, 16))
     end
     local ratingInfoFrame = getRatingInfoFrame(member)
     if not ratingInfoFrame then
@@ -847,6 +873,27 @@ local function updateApplicationForDungeons(member, appID, memberIdx)
             end
             local bestrunLevel = WrapTextInColorCode(run, color)
             additionalInfo = additionalInfo.." "..bestrunLevel
+        end
+    end
+    if GFIO.db.profile.showTimedKeys and keystoneList then
+        if GFIO.db.profile.showTimedKeys == 100 then
+            if keystoneList.twentyPlus  and keystoneList.twentyPlus >0 then
+                additionalInfo = additionalInfo.." ["..keystoneList.twentyPlus.." x 20+]"
+            elseif keystoneList.fifteenPlus  and keystoneList.fifteenPlus >0 then
+                additionalInfo = additionalInfo.." ["..keystoneList.fifteenPlus.." x 15+]"
+            elseif keystoneList.tenPlus  and keystoneList.tenPlus >0 then
+                additionalInfo = additionalInfo.." ["..keystoneList.tenPlus.." x 10+]"
+            elseif keystoneList.fivePlus  and keystoneList.fivePlus >0 then
+                additionalInfo = additionalInfo.." ["..keystoneList.fivePlus.." x 5+]"
+            end
+        elseif GFIO.db.profile.showTimedKeys == 20 and keystoneList.twentyPlus and keystoneList.twentyPlus >0 then
+            additionalInfo = additionalInfo.." ["..keystoneList.twentyPlus.." x 20+]"
+        elseif GFIO.db.profile.showTimedKeys == 15 and keystoneList.fifteenPlus and keystoneList.fifteenPlus >0 then
+            additionalInfo = additionalInfo.." ["..keystoneList.fifteenPlus.." x 15+]"
+        elseif GFIO.db.profile.showTimedKeys == 10 and keystoneList.tenPlus and keystoneList.tenPlus >0 then
+            additionalInfo = additionalInfo.." ["..keystoneList.tenPlus.." x 10+]"
+        elseif GFIO.db.profile.showTimedKeys == 5 and keystoneList.fivePlus and keystoneList.fivePlus >0 then
+            additionalInfo = additionalInfo.." ["..keystoneList.fivePlus.." x 5+]"
         end
     end
     if additionalInfo ~= "" then
