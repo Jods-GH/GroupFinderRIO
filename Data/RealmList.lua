@@ -704,7 +704,7 @@ local REGION_REALMS_KR = {
 	["알렉스트라자"] = "korean",
 
 	["듀로탄"] = "korean",
-	["불타는 군단"] = "korean",
+	["불타는군단"] = "korean",
 	["스톰레이지"] = "korean",
 }
 
