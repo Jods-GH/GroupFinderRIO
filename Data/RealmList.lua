@@ -684,6 +684,30 @@ local REGION_REALMS_US = {
 	["Remulos"] = "oceanic",
 }
 
+local REGION_REALMS_KR = {
+	["아즈샤라"] = "korean",
+
+	["줄진"] = "korean",
+	["가로나"] = "korean",
+	["굴단"] = "korean",
+	["세나리우스"] = "korean",
+	["노르간논"] = "korean",
+	["달라란"] = "korean",
+	["말퓨리온"] = "korean",
+	["헬스크림"] = "korean",
+	["하이잘"] = "korean",
+
+	["윈드러너"] = "korean",
+	["렉사르"] = "korean",
+	["와일드해머"] = "korean",
+	["데스윙"] = "korean",
+	["알렉스트라자"] = "korean",
+
+	["듀로탄"] = "korean",
+	["불타는 군단"] = "korean",
+	["스톰레이지"] = "korean",
+}
+
 GFIO.LANGUAGES = {
     ["british"] = "ENG",
     ["french"] = "FR",
@@ -695,7 +719,8 @@ GFIO.LANGUAGES = {
     ["american"] = "US",
     ["mexican"] = "MX",
     ["brazilian"] = "BR",
-    ["oceanic"] = "OCE"
+    ["oceanic"] = "OCE",
+	["korean"] = "KR",
 }
 setmetatable(GFIO.LANGUAGES, {
     __index = function(_, key)
@@ -707,6 +732,8 @@ if GetCurrentRegion() == 3 then
     GFIO.REALMS = REGION_REALMS_EU
 elseif GetCurrentRegion() == 1 then
     GFIO.REALMS = REGION_REALMS_US
+elseif GetCurrentRegion() == 2 then
+    GFIO.REALMS = REGION_REALMS_KR
 end
 setmetatable(GFIO.REALMS, {
     __index = function(_, key)
