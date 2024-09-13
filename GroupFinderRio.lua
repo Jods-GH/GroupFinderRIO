@@ -28,7 +28,6 @@ local function getScoreForRioProfile(profile, assignedRole)
     end
     return nil, profile.mythicKeystoneProfile.currentScore , false  
 end
-
 if GFIO.DEBUG_MODE then
     GFIO.RIOProfiles = {}
 end
@@ -384,24 +383,46 @@ local function updateLfgListEntry(entry, ...)
         end
     end
 end
+
 ---comment compares two different search results to sort them by score
 ---@param a number
 ---@param b number
 ---@return boolean
 local function compareSearchEntriesMplus(a,b)
+    if not a then 
+        return false
+    elseif not b then 
+        return true
+    end
+    local _, appStatusA, pendingStatusA, appDurationA = C_LFGList.GetApplicationInfo(a)
+    local _, appStatusB, pendingStatusB, appDurationB = C_LFGList.GetApplicationInfo(b)
+    local isApplicationA = appStatusA ~= "none" or pendingStatusA or false
+    local isApplicationB= appStatusB ~= "none" or pendingStatusB or false
+    if isApplicationA ~= isApplicationB then 
+        return isApplicationA 
+    end
+    if appDurationA ~= appDurationB then 
+        return appDurationA > appDurationB 
+    end
     local searchResultA = C_LFGList.GetSearchResultInfo(a)
     local searchResultB = C_LFGList.GetSearchResultInfo(b)
+    
     if not searchResultA or not searchResultB then
-        return true
+        return a>b
     elseif searchResultA and not searchResultB then
         return true
     elseif not searchResultA and searchResultB then
         return false
+    elseif searchResultA.hasSelf and not searchResultB.hasSelf then
+        return true
+    elseif searchResultB.hasSelf and not searchResultA.hasSelf then
+        return false   
     elseif searchResultA.isDelisted and not searchResultB.isDelisted then
         return false
     elseif searchResultB.isDelisted and not searchResultA.isDelisted then
         return true
     end
+   
     local mainScoreA, scoreA = getScoreForLeader(searchResultA)
     if mainScoreA and (not scoreA or mainScoreA>scoreA) then
         scoreA = mainScoreA
@@ -410,7 +431,12 @@ local function compareSearchEntriesMplus(a,b)
     if mainScoreB and (not scoreB or  mainScoreB>scoreB) then
         scoreB = mainScoreB
     end
-    return GFIO.sortFunc(scoreA,scoreB)
+    if scoreA and scoreB  and scoreA> 0 and scoreB>0 then
+        return GFIO.sortFunc(scoreA,scoreB)
+    elseif searchResultA.activityID ~= searchResultB.activityID then
+        return GFIO.sortFunc(searchResultA.activityID,searchResultB.activityID)
+    end
+    return GFIO.sortFunc(searchResultA.age,searchResultB.age)
 end
 
 ---comment compares two different search results to sort them by raidProgress
@@ -418,10 +444,29 @@ end
 ---@param b number
 ---@return boolean
 local function compareSearchEntriesRaid(a,b)
-    
+    if not a then 
+        return false
+    elseif not b then 
+        return true
+    end
+    local _, appStatusA, pendingStatusA, appDurationA = C_LFGList.GetApplicationInfo(a)
+    local _, appStatusB, pendingStatusB, appDurationB = C_LFGList.GetApplicationInfo(b)
+    local isApplicationA = appStatusA ~= "none" or pendingStatusA or false
+    local isApplicationB= appStatusB ~= "none" or pendingStatusB or false
+    if isApplicationA ~= isApplicationB then 
+        return isApplicationA 
+        end
+    if appDurationA ~= appDurationB then 
+        return appDurationA > appDurationB 
+    end
+
     local searchResultA = C_LFGList.GetSearchResultInfo(a)
     local searchResultB = C_LFGList.GetSearchResultInfo(b)
-    if  searchResultA.isDelisted and searchResultB.isDelisted then
+    if searchResultA.hasSelf and not searchResultB.hasSelf then
+        return true
+    elseif searchResultB.hasSelf and not searchResultA.hasSelf then
+        return false   
+    elseif searchResultA.isDelisted and searchResultB.isDelisted then
         return a>b -- avoid race condition by randomly sorting the searchResultId not like it matters what we do here
     elseif not searchResultA.isDelisted and searchResultB.isDelisted then
         return true
@@ -486,9 +531,9 @@ local function compareSearchEntriesRaid(a,b)
         return GFIO.sortFunc(charDataA.difficulty, charDataB.difficulty)
     elseif GFIO.db.profile.addHighestDifficulty and charDataA.highestDifficultyKilledBosses ~= charDataB.highestDifficultyKilledBosses then
         return GFIO.sortFunc(charDataA.highestDifficultyKilledBosses,charDataB.highestDifficultyKilledBosses)
-    else
-        return GFIO.sortFunc(charDataA.bosskills,charDataB.bosskills)
     end
+
+    return GFIO.sortFunc(charDataA.bosskills,charDataB.bosskills)
 
 end
 ---comment hooked to the sortSearchResults function to calls compareSearchEntries to sort the search results
@@ -497,11 +542,13 @@ local function sortSearchResults(results)
     if not PVEFrame:IsShown() or not LFGListFrame.SearchPanel:IsShown()or not GFIO.db.profile.sortGroupsByScore then
         return
     end
+    -- publish
     if results.categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
         table.sort(results.results , compareSearchEntriesMplus) 
     elseif results.categoryID == GROUP_FINDER_CATEGORY_ID_RAIDS then
         table.sort(results.results , compareSearchEntriesRaid)
     end
+    --LFGListFrame.SearchPanel.results = results
     --[[
     local dataProvider = CreateDataProvider();
     local results = self.results;
@@ -1013,7 +1060,8 @@ end
 
 
 hooksecurefunc("LFGListSearchEntry_Update", updateLfgListEntry);
-hooksecurefunc("LFGListSearchPanel_UpdateResults",sortSearchResults);
+hooksecurefunc("LFGListSearchPanel_UpdateResults",sortSearchResults); -- LFGListUtil_SortSearchResults
+hooksecurefunc("LFGListUtil_SortSearchResults",sortSearchResults); -- for some reason update results doesn't work on initial loading of the search results
 hooksecurefunc("LFGListUtil_SortApplicants", sortApplications);
 hooksecurefunc("LFGListApplicationViewer_UpdateApplicantMember", updateApplicationListEntry);
 
