@@ -68,10 +68,30 @@ GFIO.RAIDS = {
 
 GFIO.DUNGEONS = {
 	--TODO FIX THESE ↓
+	[143] = {
+		id = "", -- Grim Batol
+		difficulty = 2, -- Heroic
+		shortName = "GB (HC)"
+	},
+	[535] = {
+		id = "", -- Siege Of Boralus
+		difficulty = 2, -- Heroic
+		shortName = "SOB (HC)"
+	},
+	[658] = {
+		id = "", -- Siege Of Boralus
+		difficulty = 3, -- Mythic
+		shortName = "SOB (M)"
+	},
 	[659] = {
 		id = "", -- Siege Of Boralus
 		difficulty = 4, -- Mythic plus
 		shortName = "SOB (M+)"
+	},
+	[702] = {
+		id = "", -- Mists of Tirna scithe
+		difficulty = 4, -- Mythic plus
+		shortName = "MOTS (M)"
 	},
 	[703] = {
 		id = "", -- Mists of Tirna scithe
@@ -82,6 +102,11 @@ GFIO.DUNGEONS = {
 		id = "", -- Necrotic Wake
 		difficulty = 4, -- Mythic plus
 		shortName = "NW (M+)"
+	},
+	[714] = {
+		id = "", -- Necrotic Wake
+		difficulty = 3, -- Mythic
+		shortName = "NW (M)"
 	},
 	--TODO FIX THESE ↑
 	[1157] = {
@@ -248,57 +273,87 @@ GFIO.DUNGEONS = {
 	[1276] = {
 		id = "", -- Darkflame cleft
 		difficulty = 2, -- Heroic
-		shortName = ""
+		shortName = "DFC (HC)"
+	},
+	[1278] = {
+		id = "", -- Ara Kara
+		difficulty = 2, -- Heroic
+		shortName = "ARAK (NHC)"
 	},
 	[1279] = {
 		id = "", -- Ara Kara
 		difficulty = 2, -- Heroic
-		shortName = ""
+		shortName = "ARAK (HC)"
+	},
+	[1280] = {
+		id = "", -- Ara Kara
+		difficulty = 3, -- Mythic
+		shortName = "ARAK (M)"
 	},
 	[1284] = {
 		id = "", -- Ara Kara
 		difficulty = 4, -- Mythic plus
-		shortName = ""
+		shortName = "ARAK (M+)"
 	},
 	[1287] = {
 		id = "", -- Stone Vault
 		difficulty = 4, -- Mythic plus
-		shortName = ""
+		shortName = "SV (M+)"
 	},
 	[1290] = {
 		id = "", -- Grim Batol
 		difficulty = 4, -- Mythic plus
-		shortName = ""
+		shortName = "GB (M+)"
 	},
 	[1291] = {
 		id = "", -- The Dawnbreaker
 		difficulty = 3, -- Mythic 
-		shortName = ""
+		shortName = "DAWN (M)"
 	},
 	[1292] = {
 		id = "", -- The StoneVault
 		difficulty = 3, -- Mythic 
-		shortName = ""
+		shortName = "DAWN (M+)"
 	},
 	[1293] = {
 		id = "", -- City of Threads
 		difficulty = 3, -- Mythic 
-		shortName = ""
+		shortName = "COT (M)"
+	},
+	[1294] = {
+		id = "", -- Grim Batol
+		difficulty = 3, -- Mythic 
+		shortName = "GB (M)"
+	},
+	[1308] = {
+		id = "", -- The Rookery
+		difficulty = 2, -- Heroic 
+		shortName = "TR (NHC)"
 	},
 	[1309] = {
 		id = "", -- The Rookery
 		difficulty = 3, -- Heroic 
-		shortName = ""
+		shortName = "TR (HC)"
 	},
 	[1508] = {
 		id = "", -- Cinderbrew Meadery
 		difficulty = 3, -- Heroic 
-		shortName = ""
+		shortName = "CM (HC)"
 	},
 	[1511] = {
 		id = "", -- Priory of the Sacred flame
 		difficulty = 3, -- Heroic 
-		shortName = ""
+		shortName = "POSF (HC)"
+	},
+	[1519] = {
+		id = "", -- Stonevault
+		difficulty = 3, -- Heroic 
+		shortName = "DAWN (HC)"
+	},
+	[1521] = {
+		id = "", -- Stonevault
+		difficulty = 3, -- Heroic 
+		shortName = "SV (HC)"
 	},
 	--TODO FIX THESE ↑
 }
