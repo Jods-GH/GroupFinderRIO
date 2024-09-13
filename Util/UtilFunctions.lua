@@ -25,6 +25,13 @@ end
 ---@param b any
 ---@return boolean
 GFIO.sortFunc = function(a,b)
+    if not a and not b then
+        return true
+    elseif a and not b then
+        return true
+    elseif b and not a then
+        return false
+    end
     if GFIO.db.profile.sortAscending then
         return a < b
     else

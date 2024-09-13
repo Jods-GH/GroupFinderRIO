@@ -48,6 +48,21 @@ GFIO.RAIDS = {
 		difficulty = 3, -- mythic
 		shortName = "Amidrassil (M)"
 	},
+	[1505] = {
+		id = 14980, -- Nerub-ar Palace
+		difficulty = 1, -- normal
+		shortName = "Nerub-ar (NHC)"
+	},
+	[1506] = {
+		id = 14980, -- Nerub-ar Palace
+		difficulty = 2, -- heroic
+		shortName = "Nerub-ar (HC)"
+	},
+	[1507] = {
+		id = 14980, -- Nerub-ar Palace
+		difficulty = 3, -- mythic
+		shortName = "Nerub-ar (M)"
+	},
 
 }
 
@@ -289,6 +304,10 @@ GFIO.DUNGEONS = {
 }
 
 GFIO.ACTIVITY_ORDER = {
+	[1507] = 11030, -- Nerubian palace mythic
+	[1506] = 11020, -- Nerubian palace heroic
+	[1505] = 11010, -- Nerubian palace normal
+	[1289] = 11000, -- Worldboss TheWarWithin (order is Majorpatch in front so 11000 for 11.0)
 	[1253] = 10230, -- Amidrassil mythic
 	[1252] = 10220, -- Amidrassil heroic
 	[1251] = 10210, -- Amidrassil normal
