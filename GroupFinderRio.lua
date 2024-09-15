@@ -444,18 +444,14 @@ end
 ---@param b number
 ---@return boolean
 local function compareSearchEntriesRaid(a,b)
-    if not a then 
-        return false
-    elseif not b then 
-        return true
-    end
+
     local _, appStatusA, pendingStatusA, appDurationA = C_LFGList.GetApplicationInfo(a)
     local _, appStatusB, pendingStatusB, appDurationB = C_LFGList.GetApplicationInfo(b)
     local isApplicationA = appStatusA ~= "none" or pendingStatusA or false
     local isApplicationB= appStatusB ~= "none" or pendingStatusB or false
     if isApplicationA ~= isApplicationB then 
         return isApplicationA 
-        end
+    end
     if appDurationA ~= appDurationB then 
         return appDurationA > appDurationB 
     end
