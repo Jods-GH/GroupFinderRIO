@@ -1056,7 +1056,7 @@ end
 
 
 hooksecurefunc("LFGListSearchEntry_Update", updateLfgListEntry);
-hooksecurefunc("LFGListSearchPanel_UpdateResults",sortSearchResults); -- LFGListUtil_SortSearchResults
+--hooksecurefunc("LFGListSearchPanel_UpdateResults",sortSearchResults); -- This reorders to often so we don't do it
 hooksecurefunc("LFGListUtil_SortSearchResults",sortSearchResults); -- for some reason update results doesn't work on initial loading of the search results
 hooksecurefunc("LFGListUtil_SortApplicants", sortApplications);
 hooksecurefunc("LFGListApplicationViewer_UpdateApplicantMember", updateApplicationListEntry);
