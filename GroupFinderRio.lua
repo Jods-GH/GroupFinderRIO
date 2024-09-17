@@ -722,6 +722,9 @@ local function compareApplicantsDungeons(a,b)
         end
     end
     if scoreA == scoreB then
+        if ilvlA == ilvlB then
+            return GFIO.sortFunc(a,b)
+        end
         return GFIO.sortFunc(ilvlA,ilvlB)
     end
     return GFIO.sortFunc(scoreA,scoreB) 
@@ -824,6 +827,9 @@ local function compareApplicantsRaid(a,b)
         return GFIO.sortFunc(avgDifficultyA, avgDifficultyB)
     end
     if avgKilledBossesA == avgKilledBossesB then
+        if ilvlA == ilvlB then
+            return GFIO.sortFunc(a,b)
+        end
         return GFIO.sortFunc(ilvlA,ilvlB)
     end
     return GFIO.sortFunc(avgKilledBossesA,avgKilledBossesB) 
