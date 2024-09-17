@@ -130,7 +130,103 @@ local function createSectionToggle(frame, parentGroup, iconId)
         specsToggle.image:SetDesaturated(isactive)
     end)
 end
-
+--136080
+local brList = {
+    [66]  = true, -- prot pala
+    [104] = true, -- guardian druid
+    [250] = true, -- blood dk
+    [65]  = true, -- holy pala
+    [105] = true, -- resto druid
+    [70]  = true, -- ret pala
+    [103] = true, -- feral druid
+    [251] = true, -- frost dk
+    [252] = true, -- unholy dk
+    [102] = true, -- balance druid
+    [265] = true, -- affliction warlock
+    [266] = true, -- demonology warlock
+    [267] = true, -- destruction warlock
+}
+--136012
+local htList = {
+    [264]  = true, -- restoration shaman
+    [1468] = true, -- preservation evoker
+    [263]  = true, -- enhancement shaman
+    [255]  = true, -- survival hunter
+    [62]   = true, -- arcane mage
+    [63]   = true, -- fire mage
+    [64]   = true, -- frost mage
+    [253]  = true, -- beast mastery hunter
+    [254]  = true, -- marksmanship hunter
+    [262]  = true, -- elemental shaman
+    [1467] = true, -- devastation evoker
+    [1473] = true, -- augmentation evoker
+}
+local function createExtraSectionToggles(frame,list,iconId, tank, heal, meleeDps, rangeDps)
+    local specsToggle = AceGUI:Create("Icon")
+    frame:AddChild(specsToggle)
+    specsToggle:SetUserData("order", 0)
+    specsToggle:SetImage(iconId) 
+    specsToggle:SetImageSize(35, 35) 
+    specsToggle:SetWidth(35)
+    specsToggle:SetHeight(35)
+    local shouldDesaturate = true
+    for specID in pairs(list) do
+        if GFIO.db.profile.spec[specID] then
+            shouldDesaturate = false
+            break
+        end
+    end
+    specsToggle.image:SetDesaturated(shouldDesaturate)
+    specsToggle:SetCallback("OnClick", function() 
+        local isactive = true
+        for specID in pairs(list) do
+            if not GFIO.db.profile.spec[specID] then
+                isactive = false
+                break
+            end
+        end
+        -- we are lazy and this doesn't run very often so we just iterate through all the frames. We could make an extra list but this is not worth.
+        for key,value in pairs(tank.children) do
+            if value and value:GetUserData("specID") then
+                local specID = value:GetUserData("specID")
+                if specID and list[specID] then
+                    GFIO.db.profile.spec[specID] = not isactive
+                    value.image:SetDesaturated(isactive)
+                end
+            end
+        end
+        for key,value in pairs(heal.children) do
+            if value and value:GetUserData("specID") then
+                local specID = value:GetUserData("specID")
+                if specID and list[specID] then
+                    GFIO.db.profile.spec[specID] = not isactive
+                    value.image:SetDesaturated(isactive)
+                end
+            end
+        end
+        for key,value in pairs(meleeDps.children) do
+            if value and value:GetUserData("specID") then
+                local specID = value:GetUserData("specID")
+                if specID and list[specID] then
+                    GFIO.db.profile.spec[specID] = not isactive
+                    value.image:SetDesaturated(isactive)
+                end
+            end
+        end
+        for key,value in pairs(rangeDps.children) do
+            if value and value:GetUserData("specID") then
+                local specID = value:GetUserData("specID")
+                if specID and list[specID] then
+                    GFIO.db.profile.spec[specID] = not isactive
+                    value.image:SetDesaturated(isactive)
+                end
+            end
+        end
+        
+        C_LFGList.RefreshApplicants()
+        specsToggle.image:SetDesaturated(isactive)
+    end)
+end
 
 ---comment creates the spec frame or returns it if it already exists
 ---@return AceGUIWidget
@@ -210,9 +306,12 @@ GFIO.createOrShowSpecSelectFrame = function()
     local sectionToggles = createSpecLine()
     createSectionToggle(sectionToggles, tank, 135893)
     createSectionToggle(sectionToggles, heal, 135769)
+    createExtraSectionToggles(sectionToggles, brList, 136080 , tank, heal, meleeDps, rangeDps) -- battle ress
+    createExtraSectionToggles(sectionToggles, htList, 136012, tank, heal, meleeDps, rangeDps) -- blood lust
     createSectionToggle(sectionToggles, meleeDps, 132325)
     createSectionToggle(sectionToggles, rangeDps, 135468)
-    sectionToggles:SetPoint("CENTER",GFIO.specSelectFrame,"CENTER",50, 15)
+
+    sectionToggles:SetPoint("CENTER",GFIO.specSelectFrame,"CENTER",15, 15)
 
     LFGListFrame.ApplicationViewer:HookScript("OnShow", function() 
         GFIO.specSelectFrame:Show() 
