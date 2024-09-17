@@ -783,6 +783,7 @@ local function getProgressForApplication(applicationID)
             specIDs = true
         end
     end 
+    ilvl = ilvl/applicantInfo.numMembers
     if not maxAvailableBosses then
         if groupExceedsMembers then
             return 0, 0, ilvl, specIDs, false
@@ -795,10 +796,9 @@ local function getProgressForApplication(applicationID)
     -- this looks like magic but what we actually do is we just add all the killed bosses multiplied by their difficulty. 
     -- This means if you kill the last boss of a 8/8 raid on mythic it's "worth" 24 kills. 
     -- If we now want to go the other direction we divide total number of kills by max bosses 
-    -- to get difficulry and use modulo to get amount of bosses killed on said difficulty.
+    -- to get difficulty and use modulo to get amount of bosses killed on said difficulty.
     local avgKilledBosses = killedBosses/applicantInfo.numMembers % maxAvailableBosses
     local avgDifficulty = floor(killedBosses/applicantInfo.numMembers/maxAvailableBosses)
-    ilvl = ilvl/applicantInfo.numMembers
     if groupExceedsMembers then
         return avgKilledBosses, avgDifficulty, ilvl, specIDs, false
     elseif tankSpots < 0 or healerSpots < 0 or dpsSpots < 0 then
