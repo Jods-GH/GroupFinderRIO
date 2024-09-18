@@ -636,7 +636,7 @@ local function getApplicantInfoForRaid(applicantID, numMember, entryData)
         local language = realm and GFIO.REALMS[realm] or ""
         shortLanguage = GFIO.LANGUAGES[language] or ""
     end
-    if RaiderIO and RaiderIO.GetProfile(name,factionGroup) then
+    if RaiderIO and RaiderIO.GetProfile(name,factionGroup) and GFIO.RAIDS[entryData.activityID] then
         local profile = RaiderIO.GetProfile(name,factionGroup)
         local raidZone = GFIO.RAIDS[entryData.activityID]
         local maxBosses, charData, mainData = getProgressForRioProfile(profile, raidZone.id , raidZone.difficulty)
