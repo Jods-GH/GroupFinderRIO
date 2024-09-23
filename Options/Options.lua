@@ -172,21 +172,10 @@ GFIO.options = {
                   return  GFIO.db.profile.addScoreToGroup --Sets value of toggles depending on SavedVariables 
               end,
             },
-            sortGroupsByScore = {
-              name = GFIO.getLocalisation("sortGroupsByScore"),
-              desc = GFIO.getLocalisation("sortGroupsByScoreDescription"),
-              order = 30,
-              width = "full",
-              type = "toggle",
-              set = function(info,val)  GFIO.db.profile.sortGroupsByScore = val end, --Sets value of SavedVariables depending on toggles
-              get = function(info)
-                  return  GFIO.db.profile.sortGroupsByScore --Sets value of toggles depending on SavedVariables 
-              end,
-            },
             showCurrentScoreInGroup = {
               name = GFIO.getLocalisation("showCurrentScoreInGroup"),
               desc = GFIO.getLocalisation("showCurrentScoreInGroupDescription"),
-              order = 30,
+              order = 31,
               width = "full",
               type = "toggle",
               set = function(info,val)  GFIO.db.profile.showCurrentScoreInGroup = val end, --Sets value of SavedVariables depending on toggles
@@ -194,10 +183,22 @@ GFIO.options = {
                   return  GFIO.db.profile.showCurrentScoreInGroup --Sets value of toggles depending on SavedVariables 
               end,
             },
+            sortGroupsByScore = {
+              name = GFIO.getLocalisation("sortGroupsByScore"),
+              desc = GFIO.getLocalisation("sortGroupsByScoreDescription"),
+              order = 40,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.sortGroupsByScore = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.sortGroupsByScore --Sets value of toggles depending on SavedVariables 
+              end,
+            },
+           
             groupNameBeforeScore = {
               name = GFIO.getLocalisation("groupNameBeforeScore"),
               desc = GFIO.getLocalisation("groupNameBeforeScoreDescription"),
-              order = 30,
+              order = 50,
               width = "full",
               type = "toggle",
               set = function(info,val)  GFIO.db.profile.groupNameBeforeScore = val end, --Sets value of SavedVariables depending on toggles
@@ -208,7 +209,7 @@ GFIO.options = {
             shortenActivityName = {
               name = GFIO.getLocalisation("shortenActivityName"),
               desc = GFIO.getLocalisation("shortenActivityNameDescription"),
-              order = 30,
+              order = 60,
               width = "full",
               type = "toggle",
               set = function(info,val)  GFIO.db.profile.shortenActivityName = val end, --Sets value of SavedVariables depending on toggles
@@ -219,7 +220,7 @@ GFIO.options = {
             showKeyLevelLeader = {
               name = GFIO.getLocalisation("showKeyLevelLeader"),
               desc = GFIO.getLocalisation("showKeyLevelLeaderDescription"),
-              order = 30,
+              order = 70,
               width = "full",
               type = "toggle",
               set = function(info,val)  GFIO.db.profile.showKeyLevelLeader = val end, --Sets value of SavedVariables depending on toggles
@@ -230,7 +231,7 @@ GFIO.options = {
             showInfoInActivityName = {
               name = GFIO.getLocalisation("showInfoInActivityName"),
               desc = GFIO.getLocalisation("showInfoInActivityNameDescription"),
-              order = 30,
+              order = 80,
               width = "full",
               type = "toggle",
               set = function(info,val)  GFIO.db.profile.showInfoInActivityName = val end, --Sets value of SavedVariables depending on toggles
@@ -241,7 +242,7 @@ GFIO.options = {
             oneClickSignup = {
               name = GFIO.getLocalisation("oneClickSignup"),
               desc = GFIO.getLocalisation("oneClickSignupDescription"),
-              order = 30,
+              order = 90,
               width = "full",
               type = "toggle",
               set = function(info,val)  GFIO.db.profile.oneClickSignup = val end, --Sets value of SavedVariables depending on toggles
