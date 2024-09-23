@@ -288,7 +288,10 @@ local function updateMplusData(searchResult,entry)
                 return orginalText.." - ("..highestKey.. ")"
             end
         end
-        return orginalText.. " - "..additionalInfo
+        if additionalInfo ~= "" then
+            return orginalText.. " - "..additionalInfo
+        end
+        return orginalText
     else
         if highestKey and highestKey~="" then
             if additionalInfo ~= "" then
@@ -296,8 +299,10 @@ local function updateMplusData(searchResult,entry)
             else
                 return "("..highestKey..") "..orginalText
             end
-        else
+        elseif additionalInfo ~= "" then
             return additionalInfo.." - "..orginalText
+        else
+            return orginalText
         end
     end
 end
