@@ -73,6 +73,11 @@ GFIO.DUNGEONS = {
 		difficulty = 2, -- Heroic
 		shortName = "GB (HC)"
 	},
+	[534] = {
+		id = 9354, -- Siege Of Boralus
+		difficulty = 4, -- Mythic plus
+		shortName = "SOB (M+)"
+	},
 	[535] = {
 		id = 9354, -- Siege Of Boralus
 		difficulty = 2, -- Heroic
@@ -295,10 +300,20 @@ GFIO.DUNGEONS = {
 		difficulty = 4, -- Mythic plus
 		shortName = "ARAK (M+)"
 	},
+	[1285] = {
+		id = 14971, -- The Dawnbreaker
+		difficulty = 4, -- Mythic + 
+		shortName = "DAWN (M+)"
+	},
 	[1287] = {
 		id = 14883, -- Stone Vault
 		difficulty = 4, -- Mythic plus
 		shortName = "SV (M+)"
+	},
+	[1288] = {
+		id = 14979, -- City of Threads
+		difficulty = 4, -- Mythic plus 
+		shortName = "COT (M+)"
 	},
 	[1290] = {
 		id = 4950, -- Grim Batol
