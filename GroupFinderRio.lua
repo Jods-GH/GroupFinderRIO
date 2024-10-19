@@ -1,4 +1,4 @@
-local appName, GFIO = ...
+local addonName, GFIO = ...
 local CustomNames = C_AddOns.IsAddOnLoaded("CustomNames") and LibStub and LibStub("CustomNames")
 ---comment helper to get score from a RaiderIo profile
 ---@param profile table
@@ -98,9 +98,9 @@ end
 local function getScoreForLeader(searchResult)
     local leaderName = searchResult.leaderName
     if not leaderName and searchResult.leaderOverallDungeonScore and not searchResult.isDelisted then 
-        return nil, searchResult.leaderOverallDungeonScore 
-    elseif not leaderName or searchResult.isDelisted then 
-        return nil, 0
+        return nil, searchResult.leaderOverallDungeonScore , ""
+    elseif not leaderName then 
+        return nil, 0 , ""
     end
     local leaderFullName = leaderName:find("-")~=nil and leaderName or leaderName.."-"..GetNormalizedRealmName()
     local faction = searchResult.leaderFactionGroup
@@ -114,6 +114,9 @@ local function getScoreForLeader(searchResult)
     if RaiderIO and RaiderIO.GetProfile(leaderFullName,faction) then
         local profile = RaiderIO.GetProfile(leaderFullName,faction)
         local mainScore, score = getScoreForRioProfile(profile,nil)
+        if score< searchResult.leaderOverallDungeonScore then
+            return mainScore, searchResult.leaderOverallDungeonScore, shortLanguage
+        end
         return  mainScore or 0, score or 0, shortLanguage
     else
         return nil, searchResult.leaderOverallDungeonScore or 0, shortLanguage
@@ -225,7 +228,7 @@ local function updateMplusData(searchResult,entry)
     local highestKey = ""
     local orginalText = WrapTextInColorCode(orginalText, GFIO.Color.BlizzardGameColor)
     if GFIO.db.profile.showKeyLevelLeader and searchResult.leaderDungeonScoreInfo and 
-      searchResult.leaderDungeonScoreInfo.bestRunLevel and searchResult.leaderDungeonScoreInfo.bestRunLevel >0 then
+        searchResult.leaderDungeonScoreInfo.bestRunLevel and searchResult.leaderDungeonScoreInfo.bestRunLevel >0 then
         local scoreInfo = searchResult.leaderDungeonScoreInfo
         local color = scoreInfo.finishedSuccess and GFIO.Color.TimedKeyColor or GFIO.Color.DepletedKeyColor
         local run = scoreInfo.bestRunLevel or 0
@@ -356,14 +359,17 @@ if GFIO.DEBUG_MODE then
     GFIO.RAIDLIST = {}
 end
 local GROUP_FINDER_CATEGORY_ID_RAIDS = 3
+
+
 ---comment hooked to the updateLfgListEntry function to add the score to the group finder list
 ---@param entry table
 local function updateLfgListEntry(entry, ...)
     if not GFIO.db.profile.addScoreToGroup and not GFIO.db.profile.showLanguage then return end
+    
     local searchResultID = entry.GetData().resultID
     local searchResult = C_LFGList.GetSearchResultInfo(searchResultID)
     local activityInfoTable = C_LFGList.GetActivityInfoTable(searchResult.activityID)
-    if (not LFGListFrame.SearchPanel:IsShown() or not searchResult.leaderName or searchResult.isDelisted) then
+    if (not LFGListFrame.SearchPanel:IsShown() or searchResult.isDelisted) then
         return
     end
     local groupName = "" --""
@@ -372,11 +378,9 @@ local function updateLfgListEntry(entry, ...)
     elseif activityInfoTable.categoryID == GROUP_FINDER_CATEGORY_ID_RAIDS then
         groupName = updateRaidData(searchResult,activityInfoTable, entry)
     end
-    if groupName ~= "" then
-        entry.Name:SetText(groupName)
-    end
 
     if GFIO.DEBUG_MODE then
+        groupName = groupName.. "["..searchResult.activityID.."]"
         if not GFIO.RAIDLIST[searchResult.activityID] then
             GFIO.RAIDLIST[searchResult.activityID] = activityInfoTable.fullName
             DevTool:AddData(GFIO.RAIDLIST,"RAIDLIST")
@@ -386,6 +390,9 @@ local function updateLfgListEntry(entry, ...)
             print(activityInfoTable.fullName)
             return
         end
+    end
+    if groupName ~= "" then
+        entry.Name:SetText(groupName)
     end
 end
 
@@ -411,21 +418,13 @@ local function compareSearchEntriesMplus(a,b)
     end
     local searchResultA = C_LFGList.GetSearchResultInfo(a)
     local searchResultB = C_LFGList.GetSearchResultInfo(b)
-    
+
     if not searchResultA or not searchResultB then
         return a>b
-    elseif searchResultA and not searchResultB then
-        return true
-    elseif not searchResultA and searchResultB then
-        return false
-    elseif searchResultA.hasSelf and not searchResultB.hasSelf then
-        return true
-    elseif searchResultB.hasSelf and not searchResultA.hasSelf then
-        return false   
-    elseif searchResultA.isDelisted and not searchResultB.isDelisted then
-        return false
-    elseif searchResultB.isDelisted and not searchResultA.isDelisted then
-        return true
+    elseif searchResultA.hasSelf ~= searchResultB.hasSelf then
+        return searchResultA.hasSelf
+    elseif searchResultA.isDelisted ~= searchResultB.isDelisted then
+        return searchResultB.isDelisted
     end
    
     local mainScoreA, scoreA = getScoreForLeader(searchResultA)
@@ -436,8 +435,12 @@ local function compareSearchEntriesMplus(a,b)
     if mainScoreB and (not scoreB or  mainScoreB>scoreB) then
         scoreB = mainScoreB
     end
-    if scoreA and scoreB  and scoreA> 0 and scoreB>0 then
+
+
+    if scoreA and scoreB and scoreA> 0 or scoreB>0 then
         return GFIO.sortFunc(scoreA,scoreB)
+    elseif not scoreA or not scoreB and scoreA ~= scoreB then
+        return not scoreB
     elseif searchResultA.activityID ~= searchResultB.activityID then
         return GFIO.sortFunc(searchResultA.activityID,searchResultB.activityID)
     end
@@ -538,18 +541,30 @@ local function compareSearchEntriesRaid(a,b)
 
 end
 ---comment hooked to the sortSearchResults function to calls compareSearchEntries to sort the search results
----@param results any
-local function sortSearchResults(results)
+---@param entry any
+local function sortSearchResults(entry)
     if not PVEFrame:IsShown() or not LFGListFrame.SearchPanel:IsShown()or not GFIO.db.profile.sortGroupsByScore then
         return
     end
-    -- publish
-    if results.categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
-        table.sort(results.results , compareSearchEntriesMplus) 
-    elseif results.categoryID == GROUP_FINDER_CATEGORY_ID_RAIDS then
-        table.sort(results.results , compareSearchEntriesRaid)
+    if not entry.categoryID then -- we are in PGF sorting
+        local results = CopyTable(entry)
+        if LFGListFrame.CategorySelection.selectedCategory == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
+            table.sort(results, compareSearchEntriesMplus) 
+        elseif LFGListFrame.CategorySelection.selectedCategory == GROUP_FINDER_CATEGORY_ID_RAIDS then
+            table.sort(results, compareSearchEntriesRaid)
+        end
+        return
     end
-    --LFGListFrame.SearchPanel.results = results
+    local results = CopyTable(entry.results)
+    if entry.categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
+        table.sort(results, compareSearchEntriesMplus) 
+    elseif entry.categoryID == GROUP_FINDER_CATEGORY_ID_RAIDS then
+        table.sort(results, compareSearchEntriesRaid)
+    end
+    -- publish
+    LFGListFrame.SearchPanel.results = results
+    LFGListFrame.SearchPanel.totalResults = #results
+    LFGListSearchPanel_UpdateResults(LFGListFrame.SearchPanel)
     --[[
     local dataProvider = CreateDataProvider();
     local results = self.results;
@@ -563,6 +578,7 @@ local function sortSearchResults(results)
     DevTool:AddData(LFGListFrame.SearchPanel,"searchpanel")
     ]]
 end
+
 ---comment helper to get the timed keys from a RaiderIo profile
 ---@param profile any
 ---@return timedKeystonesList
@@ -1064,12 +1080,35 @@ local function updateApplicationListEntry(member, appID, memberIdx)
     end
     
 end
+local runningTimer
+local function HandleSearchResultUpdated()
+    runningTimer = nil
+    if LFGListFrame.CategorySelection.selectedCategory == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
+        LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel)
+    elseif LFGListFrame.CategorySelection.selectedCategory == GROUP_FINDER_CATEGORY_ID_RAIDS then
+        LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel)
+    end
+end
+ -- sometimes leaderinfo is not imediatly available so we have to resort this is ass but what can you do
+ local frame = CreateFrame("Frame", addonName .. "EventFrame")
+ frame:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED")
+ frame:SetScript("OnEvent", function(self, event, ...)
+    if not PVEFrame:IsShown() or not LFGListFrame.SearchPanel:IsShown()or not GFIO.db.profile.sortGroupsByScore then
+        return
+    end
+    if event == "LFG_LIST_SEARCH_RESULT_UPDATED" and (not runningTimer or runningTimer:IsCancelled()) then
+        runningTimer = C_Timer.NewTimer(3,HandleSearchResultUpdated)
+    end
+ end)
 
-
-hooksecurefunc("LFGListSearchEntry_Update", updateLfgListEntry);
 --hooksecurefunc("LFGListSearchPanel_UpdateResults",sortSearchResults); -- This reorders to often so we don't do it
-hooksecurefunc("LFGListUtil_SortSearchResults",sortSearchResults); -- for some reason update results doesn't work on initial loading of the search results
+if PremadeGroupsFilter and PremadeGroupsFilter.OverwriteSortSearchResults then
+    PremadeGroupsFilter.OverwriteSortSearchResults(addonName, sortSearchResults)
+    hooksecurefunc("LFGListUtil_SortSearchResults",sortSearchResults);
+else
+    hooksecurefunc("LFGListSearchPanel_UpdateResultList",sortSearchResults); -- for some reason update results doesn't work on initial loading of the search results LFGListUtil_SortSearchResults
+end
+hooksecurefunc("LFGListSearchEntry_Update", updateLfgListEntry);
 hooksecurefunc("LFGListUtil_SortApplicants", sortApplications);
 hooksecurefunc("LFGListApplicationViewer_UpdateApplicantMember", updateApplicationListEntry);
-
 
