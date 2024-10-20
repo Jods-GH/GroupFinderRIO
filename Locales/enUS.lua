@@ -55,7 +55,8 @@ if L then
     L["showTimedKeysDescription"] = "Show the amount of the timed keys above a certain threshold in the Applicant View"
     L["showRaceIconDescription"] = "Show a race icon next to the name of the applicant"
     L["showRaceIcon"] = "Show race Icon"
-    
+    L["resortGroupsConstantly"] = "Resort Groups Constantly"
+    L["resortGroupsConstantlyDescription"] = "Resort the groups every 3 Seconds to remove groups that are no longer available and update score if data becomes available later."
     
     
     

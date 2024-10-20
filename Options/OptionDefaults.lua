@@ -22,6 +22,7 @@ GFIO.OptionDefaults = {
 		wrongRoleScoreLimitForSorting = 100,
 		showTimedKeys = false,
 		showRaceIcon = false,
+		resortGroupsConstantly = true,
 		spec = {
 			[62] = true, -- arcane
 			[63] = true, -- fire

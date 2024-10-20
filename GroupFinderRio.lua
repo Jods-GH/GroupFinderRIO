@@ -1089,11 +1089,11 @@ local function HandleSearchResultUpdated()
         LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel)
     end
 end
- -- sometimes leaderinfo is not imediatly available so we have to resort this is ass but what can you do
+ -- sometimes leaderinfo is not imediatly available so we have to resort. this is ass but what can you do
  local frame = CreateFrame("Frame", addonName .. "EventFrame")
  frame:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED")
  frame:SetScript("OnEvent", function(self, event, ...)
-    if not PVEFrame:IsShown() or not LFGListFrame.SearchPanel:IsShown()or not GFIO.db.profile.sortGroupsByScore then
+    if not PVEFrame:IsShown() or not LFGListFrame.SearchPanel:IsShown()or not GFIO.db.profile.sortGroupsByScore or not GFIO.db.profile.resortGroupsConstantly then
         return
     end
     if event == "LFG_LIST_SEARCH_RESULT_UPDATED" and (not runningTimer or runningTimer:IsCancelled()) then

@@ -194,6 +194,17 @@ GFIO.options = {
                   return  GFIO.db.profile.sortGroupsByScore --Sets value of toggles depending on SavedVariables 
               end,
             },
+            resortGroupsConstantly = {
+              name = GFIO.getLocalisation("resortGroupsConstantly"),
+              desc = GFIO.getLocalisation("resortGroupsConstantlyDescription"),
+              order = 40,
+              width = "full",
+              type = "toggle",
+              set = function(info,val)  GFIO.db.profile.resortGroupsConstantly = val end, --Sets value of SavedVariables depending on toggles
+              get = function(info)
+                  return  GFIO.db.profile.resortGroupsConstantly --Sets value of toggles depending on SavedVariables 
+              end,
+            },
            
             groupNameBeforeScore = {
               name = GFIO.getLocalisation("groupNameBeforeScore"),
