@@ -1,4 +1,4 @@
-## Interface: 110002
+## Interface: 110005
 ## Title: GroupFinderRio
 ## Version: @project-version@
 ## Notes: Adds Rio score to the group finder and allows for sorting
