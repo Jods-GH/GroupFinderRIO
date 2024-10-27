@@ -411,7 +411,7 @@ local function compareSearchEntriesMplus(a,b)
     local isApplicationA = appStatusA ~= "none" or pendingStatusA or false
     local isApplicationB= appStatusB ~= "none" or pendingStatusB or false
     if isApplicationA ~= isApplicationB then 
-        return isApplicationA 
+        return not isApplicationB
     end
     if appDurationA ~= appDurationB then 
         return appDurationA > appDurationB 
@@ -422,9 +422,25 @@ local function compareSearchEntriesMplus(a,b)
     if not searchResultA or not searchResultB then
         return a>b
     elseif searchResultA.hasSelf ~= searchResultB.hasSelf then
-        return searchResultA.hasSelf
+        return not searchResultB.hasSelf
     elseif searchResultA.isDelisted ~= searchResultB.isDelisted then
-        return searchResultB.isDelisted
+        return not searchResultA.isDelisted
+    end
+    -- sort own groups first
+    if searchResultA.hasSelf ~= searchResultB.hasSelf then
+        return searchResultA.hasSelf
+    end
+    -- sort bnet friends first
+    if searchResultA.numBNetFriends ~= searchResultB.numBNetFriends then
+        return searchResultA.numBNetFriends > searchResultB.numBNetFriends
+    end
+    -- then guild mates
+    if searchResultA.numGuildMates ~= searchResultB.numGuildMates then
+        return searchResultA.numGuildMates > searchResultB.numGuildMates
+    end
+    -- then char friends
+    if searchResultA.numCharFriends ~= searchResultB.numCharFriends then
+        return searchResultA.numCharFriends > searchResultB.numCharFriends
     end
    
     local mainScoreA, scoreA = getScoreForLeader(searchResultA)
@@ -437,9 +453,9 @@ local function compareSearchEntriesMplus(a,b)
     end
 
 
-    if scoreA and scoreB and scoreA> 0 or scoreB>0 then
+    if scoreA and scoreB and (scoreA> 0 or scoreB>0) then
         return GFIO.sortFunc(scoreA,scoreB)
-    elseif not scoreA or not scoreB and scoreA ~= scoreB then
+    elseif (not scoreA or not scoreB) and scoreA ~= scoreB then
         return not scoreB
     elseif searchResultA.activityID ~= searchResultB.activityID then
         return GFIO.sortFunc(searchResultA.activityID,searchResultB.activityID)
@@ -458,7 +474,7 @@ local function compareSearchEntriesRaid(a,b)
     local isApplicationA = appStatusA ~= "none" or pendingStatusA or false
     local isApplicationB= appStatusB ~= "none" or pendingStatusB or false
     if isApplicationA ~= isApplicationB then 
-        return isApplicationA 
+        return not isApplicationB 
     end
     if appDurationA ~= appDurationB then 
         return appDurationA > appDurationB 
@@ -499,10 +515,8 @@ local function compareSearchEntriesRaid(a,b)
     
     if not charDataA and not charDataB then
         return a>b  -- avoid race condition by randomly sorting the searchResultId not like it matters what we do here
-    elseif charDataA and not charDataB then
-        return true
-    elseif not charDataA and charDataB then
-        return false
+    elseif charDataA ~= charDataB then
+        return not charDataB
     end
 
     if difficultyA ~= difficultyB then
