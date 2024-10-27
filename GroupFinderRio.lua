@@ -634,8 +634,8 @@ local function getApplicantInfoForKeys(applicantID, numMember)
     local shortLanguage  = ""
     if name then
         local realm = name:match("-(.+)") or GetNormalizedRealmName()
-        local language = realm and GFIO.REALMS[realm] or ""
-        shortLanguage = GFIO.LANGUAGES[language] or ""
+        local language = realm and realm ~= "" and GFIO.REALMS[realm] or ""
+        shortLanguage = language and GFIO.LANGUAGES[language] or ""
     end
     if RaiderIO and RaiderIO.GetProfile(name,factionGroup) then
         local profile = RaiderIO.GetProfile(name,factionGroup)
