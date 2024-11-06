@@ -226,7 +226,6 @@ local function updateMplusData(searchResult,entry)
     local additionalInfo = ""
     local languageTag = ""
     local highestKey = ""
-    local orginalText = WrapTextInColorCode(orginalText, GFIO.Color.BlizzardGameColor)
     if GFIO.db.profile.showKeyLevelLeader and searchResult.leaderDungeonScoreInfo and 
         searchResult.leaderDungeonScoreInfo.bestRunLevel and searchResult.leaderDungeonScoreInfo.bestRunLevel >0 then
         local scoreInfo = searchResult.leaderDungeonScoreInfo
@@ -393,7 +392,15 @@ local function updateLfgListEntry(entry, ...)
     end
     if groupName ~= "" then
         entry.Name:SetText(groupName)
+    else
+        entry.Name:SetText(entry.Name:GetText())
     end
+    local color = CreateColorFromHexString(GFIO.Color.BlizzardGameColor)
+    if (searchResult.numBNetFriends and searchResult.numBNetFriends > 0) or (searchResult.numCharFriends and searchResult.numCharFriends>0) or (searchResult.numGuildMates and searchResult.numGuildMates>0)then
+        color = CreateColorFromHexString(GFIO.Color.BlizzardBnetColor)
+    end
+
+    entry.ResultBG:SetVertexColor(color:GetRGBA())
 end
 
 ---comment compares two different search results to sort them by score

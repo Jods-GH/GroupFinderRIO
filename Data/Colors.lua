@@ -6,3 +6,5 @@ GFIO.Color.BlizzardGameColor = "ffffd200"
 GFIO.Color.DepletedKeyColor = "FFFF0000"
 ---@vararg string color for timed keys
 GFIO.Color.TimedKeyColor = "FF33FF00"
+---@vararg string bnet color
+GFIO.Color.BlizzardBnetColor = "FF00D2EE"
