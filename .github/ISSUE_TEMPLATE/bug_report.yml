@@ -52,7 +52,7 @@ body:
     label: Last Good Version
     description: |
       Was it working in a previous version? If yes, which was the last good one?
-    placeholder: "LibCustomNames-1.0-1.0.0"
+    placeholder: "v1.0.0"
   validations:
     required: false
 
