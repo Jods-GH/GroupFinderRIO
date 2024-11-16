@@ -934,8 +934,9 @@ local function updateApplicationForDungeons(member, appID, memberIdx)
         end
     end
     if raceID and GFIO.db.profile.showRaceIcon then   
-        local raceInfo = C_CreatureInfo.GetRaceInfo(raceID)
-        member.Name:SetText(member.Name:GetText().." "..CreateAtlasMarkup("raceicon-"..raceInfo.clientFileString.."-female", 16, 16))
+        local raceInfo = C_CreatureInfo.GetRaceInfo(raceID) 
+        local clientFileString = GFIO.RaceOverwrite[raceID] and GFIO.RaceOverwrite[raceID].iconstring or  raceInfo.clientFileString
+        member.Name:SetText(member.Name:GetText().." "..CreateAtlasMarkup("raceicon-"..clientFileString.."-female", 16, 16))
     end
     local ratingInfoFrame = getRatingInfoFrame(member)
     if not ratingInfoFrame then
