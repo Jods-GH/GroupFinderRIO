@@ -841,6 +841,7 @@ local function getProgressForApplication(applicationID)
     -- to get difficulty and use modulo to get amount of bosses killed on said difficulty.
     local avgKilledBosses = killedBosses/applicantInfo.numMembers % maxAvailableBosses
     local avgDifficulty = floor(killedBosses/applicantInfo.numMembers/maxAvailableBosses)
+
     if groupExceedsMembers then
         return avgKilledBosses, avgDifficulty, ilvl, specIDs, false
     elseif tankSpots < 0 or healerSpots < 0 or dpsSpots < 0 then
@@ -855,15 +856,11 @@ end
 local function compareApplicantsRaid(a,b)
     local avgKilledBossesA, avgDifficultyA, ilvlA, specIDsA, CanFitA  = getProgressForApplication(a)
     local avgKilledBossesB, avgDifficultyB, ilvlB, specIDsB, CanFitB  = getProgressForApplication(b)
-    if CanFitA and not CanFitB then
-        return true
-    elseif CanFitB and not CanFitA then
-        return false
+    if CanFitA ~= CanFitB then
+        return not CanFitB
     end
-    if specIDsA and not specIDsB then
-        return true
-    elseif specIDsB and not specIDsA then
-        return false
+    if specIDsA ~= specIDsB then
+        return not specIDsB
     end
     if avgDifficultyA ~= avgDifficultyB then
         return GFIO.sortFunc(avgDifficultyA, avgDifficultyB)
@@ -1010,6 +1007,7 @@ local function updateApplicationForDungeons(member, appID, memberIdx)
         ratingInfoFrame.Rating:SetText(score.." "..textAddition)
         ratingInfoFrame.Rating:SetTextColor(getScoreColor(score))
     end
+    ratingInfoFrame.Rating:Show()
     ratingInfoFrame.Rating:SetPoint("LEFT",member.Rating,"LEFT")
     member.Rating:Hide()
     if GFIO.db.profile.showNote and applicantInfo.comment and applicantInfo.comment~="" then
@@ -1075,7 +1073,7 @@ local function updateApplicationForRaids(member, appID, memberIdx)
     ratingInfoFrame:SetParent(member)
     ratingInfoFrame:SetPoint("TOP",member,"TOP")
     ratingInfoFrame:SetPoint("RIGHT",member.RoleIcon1,"LEFT",-10,0)
-    
+    ratingInfoFrame.Rating:Hide()
 
     if GFIO.db.profile.showNote and applicantInfo.comment and applicantInfo.comment~="" then
         ratingInfoFrame.Note:Show()
