@@ -15,7 +15,7 @@ local function getScoreForRioProfile(profile, assignedRole)
     if (profile.mythicKeystoneProfile.mainCurrentScore and profile.mythicKeystoneProfile.mainCurrentScore>0) and profile.mythicKeystoneProfile.mainCurrentScore> profile.mythicKeystoneProfile.currentScore then
         return profile.mythicKeystoneProfile.mainCurrentScore, profile.mythicKeystoneProfile.currentScore, true
     end
-    if assignedRole then
+    if assignedRole and profile.mythicKeystoneProfile.mplusCurrent then
         for key,value in pairs(profile.mythicKeystoneProfile.mplusCurrent.roles) do
             if value[1] == "tank" and assignedRole == "TANK" and value[2] == "full" then
                 return nil, profile.mythicKeystoneProfile.currentScore, true
