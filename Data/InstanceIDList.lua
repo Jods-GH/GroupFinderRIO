@@ -58,7 +58,7 @@ GFIO.RAIDS = {
 		difficulty = 2, -- heroic
 		shortName = "Nerub-ar (HC)"
 	},
-	[1507] = {
+	[1504] = {
 		id = 14980, -- Nerub-ar Palace
 		difficulty = 3, -- mythic
 		shortName = "Nerub-ar (M)"
@@ -374,7 +374,7 @@ GFIO.DUNGEONS = {
 }
 
 GFIO.ACTIVITY_ORDER = {
-	[1507] = 11030, -- Nerubian palace mythic
+	[1504] = 11030, -- Nerubian palace mythic
 	[1506] = 11020, -- Nerubian palace heroic
 	[1505] = 11010, -- Nerubian palace normal
 	[1289] = 11000, -- Worldboss TheWarWithin (order is Majorpatch in front so 11000 for 11.0)
