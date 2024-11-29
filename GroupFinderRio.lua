@@ -114,7 +114,7 @@ local function getScoreForLeader(searchResult)
     if RaiderIO and RaiderIO.GetProfile(leaderFullName,faction) then
         local profile = RaiderIO.GetProfile(leaderFullName,faction)
         local mainScore, score = getScoreForRioProfile(profile,nil)
-        if score< searchResult.leaderOverallDungeonScore then
+        if (score or 0) < (searchResult.leaderOverallDungeonScore or 0) then
             return mainScore, searchResult.leaderOverallDungeonScore, shortLanguage
         end
         return  mainScore or 0, score or 0, shortLanguage
