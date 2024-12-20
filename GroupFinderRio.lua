@@ -134,8 +134,8 @@ local function getProgressForLeader(searchResult)
     local leaderName = searchResult.leaderName
     local raidZone
     for _,activityID in pairs (searchResult.activityIDs) do
-        if GFIO.RAIDS[searchResult.activityID] then
-            raidZone = GFIO.RAIDS[searchResult.activityID]
+        if GFIO.RAIDS[activityID] then
+            raidZone = GFIO.RAIDS[activityID]
         end
     end
     if not leaderName or searchResult.isDelisted or not raidZone or raidZone == {} then 
@@ -349,7 +349,7 @@ local function updateRaidData(searchResult,activityInfoTable,entry)
     local activityName = entry.ActivityName:GetText()
     for _,activityID in pairs (searchResult.activityIDs) do
         if GFIO.db.profile.shortenActivityName and GFIO.RAIDS[activityID] then
-            local raid = GFIO.RAIDS[searchResult.activityID]
+            local raid = GFIO.RAIDS[activityID]
             activityName = raid.shortName
         end
     end
@@ -391,13 +391,13 @@ local function updateLfgListEntry(entry, ...)
         end
 
         if GFIO.DEBUG_MODE then
-            groupName = groupName.. "["..searchResult.activityID.."]"
-            if not GFIO.RAIDLIST[searchResult.activityID] then
-                GFIO.RAIDLIST[searchResult.activityID] = activityInfoTable.fullName
+            groupName = groupName.. "["..activitiID.."]"
+            if not GFIO.RAIDLIST[activitiID] then
+                GFIO.RAIDLIST[activitiID] = activityInfoTable.fullName
                 DevTool:AddData(GFIO.RAIDLIST,"RAIDLIST")
                 return
-            elseif GFIO.RAIDLIST[searchResult.activityID] ~= activityInfoTable.fullName then
-                print(GFIO.RAIDLIST[searchResult.activityID])
+            elseif GFIO.RAIDLIST[activitiID] ~= activityInfoTable.fullName then
+                print(GFIO.RAIDLIST[activitiID])
                 print(activityInfoTable.fullName)
                 return
             end
@@ -525,9 +525,8 @@ local function compareSearchEntriesRaid(a,b)
         assert(GFIO.ACTIVITY_ORDER[searchResultA.activityID] , "Activity ID has no order: "..searchResultA.activityID)
         assert(GFIO.ACTIVITY_ORDER[searchResultB.activityID] , "Activity ID has no order: "..searchResultB.activityID)
     end
-
-    for _, activityIDA in searchResultA.activityIDs do
-        for _, activityIDB in searchResultB.activityIDs do
+    for _, activityIDA in pairs(searchResultA.activityIDs) do
+        for _, activityIDB in pairs(searchResultB.activityIDs) do
             if not GFIO.ACTIVITY_ORDER[activityIDA] or not GFIO.ACTIVITY_ORDER[activityIDB] 
                 or not GFIO.RAIDS[activityIDA] or not GFIO.RAIDS[activityIDB] then
                 return activityIDA > activityIDB
