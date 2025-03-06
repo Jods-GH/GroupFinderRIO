@@ -262,6 +262,19 @@ GFIO.options = {
               end,
             },
           }
-        }
+        },
+      debugMode = {
+        name = GFIO.getLocalisation("debugMode"),
+        desc = GFIO.getLocalisation("debugModeDescription"),
+        order = 30,
+        width = "full",
+        type = "toggle",
+        set = function(info,val)  GFIO.db.profile.debugMode = val end, --Sets value of SavedVariables depending on toggles
+        get = function(info)
+            return  GFIO.db.profile.debugMode --Sets value of toggles depending on SavedVariables 
+        end,
+                confirm = true,
+        confirmText = GFIO.getLocalisation("debugModeWarning"), 
+      },  
   }
 }

@@ -57,8 +57,9 @@ if L then
     L["showRaceIcon"] = "Show race Icon"
     L["resortGroupsConstantly"] = "Resort Groups Constantly"
     L["resortGroupsConstantlyDescription"] = "Resort the groups every 3 Seconds to remove groups that are no longer available and update score if data becomes available later."
-    
-    
+    L["debugMode"] = "Enable Debug Mode"
+    L["debugModeDescription"] = "Enables debug mode."
+    L["debugModeWarning"] = "Are you sure you want to enable debug mode? This will Spam your chat and throw errors if you do not have the appropriate companion addons so only enable this if told to by the support staff or you know what you are doing."
     
     GFIO.localisation = L
 end

@@ -28,16 +28,13 @@ local function getScoreForRioProfile(profile, assignedRole)
     end
     return nil, profile.mythicKeystoneProfile.currentScore , false  
 end
-if GFIO.DEBUG_MODE then
-    GFIO.RIOProfiles = {}
-end
 ---comment helper to get Progress from a RaiderIo profile
 ---@param profile table
 ---@return integer maxBosses
 ---@return bossData? charData
 ---@return bossData? maindata
 local function getProgressForRioProfile(profile, instanceID, activeDifficulty)
-    if GFIO.DEBUG_MODE then
+    if GFIO.db.profile.debugMode then
         DevTools_Dump(profile)
     end
     if not profile.raidProfile or not profile.raidProfile.raidProgress then
@@ -56,7 +53,7 @@ local function getProgressForRioProfile(profile, instanceID, activeDifficulty)
         highestDifficultyKilledBosses = 0,
         difficulty = 0,
     }
-    if GFIO.DEBUG_MODE then
+    if GFIO.db.profile.debugMode then
         if not GFIO.RIOProfiles[profile.name.."-"..profile.realm] then
             GFIO.RIOProfiles[profile.name.."-"..profile.realm] = profile
             DevTool:AddData(GFIO.RIOProfiles,"RIOProfiles")
@@ -363,10 +360,6 @@ local function updateRaidData(searchResult,activityInfoTable,entry)
         return additionalInfo..orginalText
     end
 end
-
-if GFIO.DEBUG_MODE then
-    GFIO.RAIDLIST = {}
-end
 local GROUP_FINDER_CATEGORY_ID_RAIDS = 3
 
 
@@ -390,7 +383,7 @@ local function updateLfgListEntry(entry, ...)
             groupName = updateRaidData(searchResult,activityInfoTable, entry)
         end
 
-        if GFIO.DEBUG_MODE then
+        if GFIO.db.profile.debugMode then
             groupName = groupName.. "["..activitiID.."]"
             if not GFIO.RAIDLIST[activitiID] then
                 GFIO.RAIDLIST[activitiID] = activityInfoTable.fullName
@@ -519,7 +512,7 @@ local function compareSearchEntriesRaid(a,b)
         return false
     end
 
-    if GFIO.DEBUG_MODE then -- use this to gather raid ids for the raidlist
+    if GFIO.db.profile.debugMode then -- use this to gather raid ids for the raidlist
         assert(GFIO.RAIDS[searchResultA.activityID], "No Raid Data for ID: "..searchResultA.activityID)
         assert(GFIO.RAIDS[searchResultB.activityID], "No Raid Data for ID: "..searchResultB.activityID)
         assert(GFIO.ACTIVITY_ORDER[searchResultA.activityID] , "Activity ID has no order: "..searchResultA.activityID)

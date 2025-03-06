@@ -23,6 +23,7 @@ GFIO.OptionDefaults = {
 		showTimedKeys = false,
 		showRaceIcon = false,
 		resortGroupsConstantly = true,
+		debugMode = false,
 		spec = {
 			[62] = true, -- arcane
 			[63] = true, -- fire

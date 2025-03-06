@@ -28,6 +28,10 @@ function GroupFinderRIO:OnInitialize()
     elseif GFIO.db.profile.oneClickSignup then
         error(GFIO.getLocalisation("OneClickSignupNotAvailable"))
     end
+    if GFIO.db.profile.debugMode then
+        GFIO.RIOProfiles = {}
+        GFIO.RAIDLIST = {}
+    end
 end
 
 
