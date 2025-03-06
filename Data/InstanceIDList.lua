@@ -63,6 +63,21 @@ GFIO.RAIDS = {
 		difficulty = 3, -- mythic
 		shortName = "Nerub-ar (M)"
 	},
+	[1601] = {
+		id = 15522, -- Liberation of Undermine
+		difficulty = 1, -- normal
+		shortName = "Undermine (NHC)"
+	},
+	[1600] = {
+		id = 15522, -- Liberation of Undermine
+		difficulty = 2, -- heroic
+		shortName = "Undermine (HC)"
+	},
+	[1602] = {
+		id = 15522, -- Liberation of Undermine
+		difficulty = 3, -- mythic
+		shortName = "Undermine (M)"
+	},
 
 }
 
@@ -83,6 +98,21 @@ GFIO.DUNGEONS = {
 		difficulty = 2, -- Heroic
 		shortName = "SOB (HC)"
 	},
+	[510] = {
+		id = 8064, -- The MOTHERLODE
+		difficulty = 4, -- M+
+		shortName = "ML (M+)"
+	},
+	[511] = {
+		id = 8064, -- The MOTHERLODE
+		difficulty = 2, -- HC
+		shortName = "ML (HC)"
+	},
+	[646] = {
+		id = 8064, -- The MOTHERLODE
+		difficulty = 3, -- HC
+		shortName = "ML (M)"
+	},
 	[658] = {
 		id = 9354, -- Siege Of Boralus
 		difficulty = 3, -- Mythic
@@ -92,6 +122,16 @@ GFIO.DUNGEONS = {
 		id = 9354, -- Siege Of Boralus
 		difficulty = 4, -- Mythic plus
 		shortName = "SOB (M+)"
+	},
+	[683] = {
+		id = 10225, -- Mechagon Workshop
+		difficulty = 4, -- M+
+		shortName = "WS (M+)"
+	},
+	[1616] = {
+		id = 10225, -- Mechagon Workshop
+		difficulty = 3, -- M+
+		shortName = "WS (M)"
 	},
 	[702] = {
 		id = 13334, -- Mists of Tirna scithe
@@ -112,6 +152,16 @@ GFIO.DUNGEONS = {
 		id = 12916, -- Necrotic Wake
 		difficulty = 3, -- Mythic
 		shortName = "NW (M)"
+	},
+	[717] = {
+		id = 12841, -- Theater of Pain
+		difficulty = 4, -- Mythic
+		shortName = "TOP (M+)"
+	},
+	[718] = {
+		id = 12841, -- Theater of Pain
+		difficulty = 3,-- Mythic
+		shortName = "TOP (M)"
 	},
 	--TODO FIX THESE ↑
 	[1157] = {
@@ -276,9 +326,19 @@ GFIO.DUNGEONS = {
 	},
 	--TODO FIX THESE ↓
 	[1276] = {
-		id = "", -- Darkflame cleft
+		id = "14882", -- Darkflame cleft
 		difficulty = 2, -- Heroic
 		shortName = "DFC (HC)"
+	},
+	[1277] = {
+		id = "14882", -- Darkflame cleft
+		difficulty = 3, -- Mythic
+		shortName = "DFC (M)"
+	},
+	[1282] = {
+		id = "14882", -- Darkflame cleft
+		difficulty = 4, -- Mythic + 
+		shortName = "POTSF (M+)"
 	},
 	[1278] = {
 		id = 15093, -- Ara Kara
@@ -299,6 +359,11 @@ GFIO.DUNGEONS = {
 		id = 15093, -- Ara Kara
 		difficulty = 4, -- Mythic plus
 		shortName = "ARAK (M+)"
+	},
+	[1281] = {
+		id = 15093, -- Priory of the Sacred Flame
+		difficulty = 4, -- Mythic + 
+		shortName = "POTSF (M+)"
 	},
 	[1285] = {
 		id = 14971, -- The Dawnbreaker
@@ -341,19 +406,39 @@ GFIO.DUNGEONS = {
 		shortName = "GB (M)"
 	},
 	[1308] = {
-		id = "", -- The Rookery
+		id = "14938", -- The Rookery
 		difficulty = 2, -- Heroic 
 		shortName = "TR (NHC)"
 	},
 	[1309] = {
-		id = "", -- The Rookery
+		id = "14938", -- The Rookery
 		difficulty = 2, -- Heroic 
 		shortName = "TR (HC)"
 	},
+	[1310] = {
+		id = "14938", -- The Rookery
+		difficulty = 3, -- Mythic 
+		shortName = "TR (M)"
+	},
+	[1283] = {
+		id = "14938", -- The Rookery
+		difficulty = 4, -- M+ 
+		shortName = "TR (M+)"
+	},
 	[1508] = {
-		id = "", -- Cinderbrew Meadery
+		id = "15103", -- Cinderbrew Meadery
 		difficulty = 2, -- Heroic 
 		shortName = "CM (HC)"
+	},
+	[1509] = {
+		id = "15103", -- Cinderbrew Meadery
+		difficulty = 3, -- Mythic
+		shortName = "CM (M)"
+	},
+	[1286] = {
+		id = "15103", -- Cinderbrew Meadery
+		difficulty = 4, -- Mythic
+		shortName = "CM (M+)"
 	},
 	[1511] = {
 		id = "", -- Priory of the Sacred flame
@@ -370,10 +455,23 @@ GFIO.DUNGEONS = {
 		difficulty = 2, -- Heroic 
 		shortName = "SV (HC)"
 	},
+	[1549] = {
+		id = 15452, -- Operation Floodgate
+		difficulty = 3, -- Mythic 
+		shortName = "OFG (M)"
+	},
+	[1550] = {
+		id = 15452, -- Operation Floodgate
+		difficulty = 4, -- M+ 
+		shortName = "OFG (M+)"
+	},
 	--TODO FIX THESE ↑
 }
 
 GFIO.ACTIVITY_ORDER = {
+	[1602] = 11130, -- Liberation of Undermine mythic
+	[1600] = 11120, -- Liberation of Undermine heroic
+	[1601] = 11110, -- Liberation of Undermine normal
 	[1504] = 11030, -- Nerubian palace mythic
 	[1506] = 11020, -- Nerubian palace heroic
 	[1505] = 11010, -- Nerubian palace normal
@@ -388,6 +486,8 @@ GFIO.ACTIVITY_ORDER = {
 	[1190] = 10020, -- vault heroic
 	[1189] = 10010, -- vault normal
 	[1146] = 10000, -- Worldboss Dragonflight (order is Majorpatch in front so 10000 for 10.0)
+
+	
 }
 if GFIO.DEBUG_MODE then
 	setmetatable(GFIO.RAIDS, {
