@@ -338,7 +338,7 @@ GFIO.DUNGEONS = {
 	[1282] = {
 		id = "14882", -- Darkflame cleft
 		difficulty = 4, -- Mythic + 
-		shortName = "POTSF (M+)"
+		shortName = "DFC (M+)"
 	},
 	[1278] = {
 		id = 15093, -- Ara Kara
