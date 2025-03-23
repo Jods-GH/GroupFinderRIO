@@ -34,8 +34,8 @@ end
 ---@return bossData? charData
 ---@return bossData? maindata
 local function getProgressForRioProfile(profile, instanceID, activeDifficulty)
-    if GFIO.db.profile.debugMode then
-        DevTools_Dump(profile)
+    if GFIO.db.profile.debugMode and DevTool then
+        DevTool:AddData(profile,"Profile")
     end
     if not profile.raidProfile or not profile.raidProfile.raidProgress then
         return 0, nil, nil
@@ -56,7 +56,9 @@ local function getProgressForRioProfile(profile, instanceID, activeDifficulty)
     if GFIO.db.profile.debugMode then
         if not GFIO.RIOProfiles[profile.name.."-"..profile.realm] then
             GFIO.RIOProfiles[profile.name.."-"..profile.realm] = profile
-            DevTool:AddData(GFIO.RIOProfiles,"RIOProfiles")
+            if DevTool then
+                DevTool:AddData(GFIO.RIOProfiles,"RIOProfiles")
+            end
         end
     end
     for _,raid in pairs(profile.raidProfile.raidProgress) do
@@ -387,7 +389,9 @@ local function updateLfgListEntry(entry, ...)
             groupName = groupName.. "["..activitiID.."]"
             if not GFIO.RAIDLIST[activitiID] then
                 GFIO.RAIDLIST[activitiID] = activityInfoTable.fullName
-                DevTool:AddData(GFIO.RAIDLIST,"RAIDLIST")
+                if DevTool then
+                    DevTool:AddData(GFIO.RAIDLIST,"RAIDLIST")
+                end
                 return
             elseif GFIO.RAIDLIST[activitiID] ~= activityInfoTable.fullName then
                 print(GFIO.RAIDLIST[activitiID])

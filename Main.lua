@@ -4,7 +4,9 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceDBOptions = LibStub("AceDBOptions-3.0")
 ---@class MyAddon : AceAddon-3.0, AceConsole-3.0, AceConfig-3.0, AceGUI-3.0, AceConfigDialog-3.0
 local GroupFinderRIO = LibStub("AceAddon-3.0"):NewAddon("GroupFinderRIO", "AceConsole-3.0", "AceEvent-3.0")
-
+-- debug variables
+GFIO.RIOProfiles = {}
+GFIO.RAIDLIST = {}
 
 function GroupFinderRIO:OnInitialize()
 	-- Called when the addon is loaded
@@ -27,10 +29,6 @@ function GroupFinderRIO:OnInitialize()
         GFIO.hookFunc() -- hooking the LFGListSearchEntry_OnClick function if enabled and premades group filter is disabled
     elseif GFIO.db.profile.oneClickSignup then
         error(GFIO.getLocalisation("OneClickSignupNotAvailable"))
-    end
-    if GFIO.db.profile.debugMode then
-        GFIO.RIOProfiles = {}
-        GFIO.RAIDLIST = {}
     end
 end
 
