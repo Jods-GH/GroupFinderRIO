@@ -126,12 +126,12 @@ GFIO.DUNGEONS = {
 	[683] = {
 		id = 10225, -- Mechagon Workshop
 		difficulty = 4, -- M+
-		shortName = "WS (M+)"
+		shortName = "WORK (M+)"
 	},
 	[1616] = {
 		id = 10225, -- Mechagon Workshop
 		difficulty = 3, -- M+
-		shortName = "WS (M)"
+		shortName = "WORK (M)"
 	},
 	[702] = {
 		id = 13334, -- Mists of Tirna scithe
@@ -363,7 +363,7 @@ GFIO.DUNGEONS = {
 	[1281] = {
 		id = 15093, -- Priory of the Sacred Flame
 		difficulty = 4, -- Mythic + 
-		shortName = "POTSF (M+)"
+		shortName = "PSF (M+)"
 	},
 	[1285] = {
 		id = 14971, -- The Dawnbreaker
@@ -408,37 +408,37 @@ GFIO.DUNGEONS = {
 	[1308] = {
 		id = "14938", -- The Rookery
 		difficulty = 2, -- Heroic 
-		shortName = "TR (NHC)"
+		shortName = "ROOK (NHC)"
 	},
 	[1309] = {
 		id = "14938", -- The Rookery
 		difficulty = 2, -- Heroic 
-		shortName = "TR (HC)"
+		shortName = "ROOK (HC)"
 	},
 	[1310] = {
 		id = "14938", -- The Rookery
 		difficulty = 3, -- Mythic 
-		shortName = "TR (M)"
+		shortName = "ROOK (M)"
 	},
 	[1283] = {
 		id = "14938", -- The Rookery
 		difficulty = 4, -- M+ 
-		shortName = "TR (M+)"
+		shortName = "ROOK (M+)"
 	},
 	[1508] = {
 		id = "15103", -- Cinderbrew Meadery
 		difficulty = 2, -- Heroic 
-		shortName = "CM (HC)"
+		shortName = "BREW (HC)"
 	},
 	[1509] = {
 		id = "15103", -- Cinderbrew Meadery
 		difficulty = 3, -- Mythic
-		shortName = "CM (M)"
+		shortName = "BREW (M)"
 	},
 	[1286] = {
 		id = "15103", -- Cinderbrew Meadery
 		difficulty = 4, -- Mythic
-		shortName = "CM (M+)"
+		shortName = "BREW (M+)"
 	},
 	[1511] = {
 		id = "", -- Priory of the Sacred flame
@@ -458,12 +458,12 @@ GFIO.DUNGEONS = {
 	[1549] = {
 		id = 15452, -- Operation Floodgate
 		difficulty = 3, -- Mythic 
-		shortName = "OFG (M)"
+		shortName = "FLOOD (M)"
 	},
 	[1550] = {
 		id = 15452, -- Operation Floodgate
 		difficulty = 4, -- M+ 
-		shortName = "OFG (M+)"
+		shortName = "FLOOD (M+)"
 	},
 	--TODO FIX THESE ↑
 }
