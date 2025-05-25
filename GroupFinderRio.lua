@@ -230,7 +230,7 @@ local function updateMplusData(searchResult,entry)
     local additionalInfo = ""
     local languageTag = ""
     local highestKey = ""
-    if GFIO.db.profile.showKeyLevelLeader and searchResult.leaderDungeonScoreInfo and 
+    if GFIO.db.profile.showKeyLevelLeader and searchResult.leaderDungeonScoreInfo and searchResult.leaderDungeonScoreInfo[1] and
         searchResult.leaderDungeonScoreInfo[1].bestRunLevel and searchResult.leaderDungeonScoreInfo[1].bestRunLevel >0 then
         local scoreInfo = searchResult.leaderDungeonScoreInfo
         local color = scoreInfo[1].finishedSuccess and GFIO.Color.TimedKeyColor or GFIO.Color.DepletedKeyColor
