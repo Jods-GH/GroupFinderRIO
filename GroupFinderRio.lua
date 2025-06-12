@@ -439,8 +439,6 @@ local function compareSearchEntriesMplus(a,b)
 
     if not searchResultA or not searchResultB then
         return a>b
-    elseif searchResultA.hasSelf ~= searchResultB.hasSelf then
-        return not searchResultB.hasSelf
     elseif searchResultA.isDelisted ~= searchResultB.isDelisted then
         return not searchResultA.isDelisted
     end
