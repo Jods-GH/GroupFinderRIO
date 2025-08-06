@@ -133,6 +133,21 @@ GFIO.DUNGEONS = {
 		difficulty = 3, -- M+
 		shortName = "WORK (M)"
 	},
+	[696] = {
+		id = 12831, -- Halls of Atonement
+		difficulty = 2, -- Heroic
+		shortName = "HOA (HC)"
+	},
+	[698] = {
+		id = 12831, -- Halls of Atonement
+		difficulty = 3, -- Mythic
+		shortName = "HOA (M)"
+	},
+	[699] = {
+		id = 12831, -- Halls of Atonement
+		difficulty = 4, -- Mythic
+		shortName = "HOA (M+)"
+	},
 	[702] = {
 		id = 13334, -- Mists of Tirna scithe
 		difficulty = 4, -- Mythic plus
@@ -163,11 +178,16 @@ GFIO.DUNGEONS = {
 		difficulty = 3,-- Mythic
 		shortName = "TOP (M)"
 	},
+	[1019] = {
+		id = 13577, -- Tazavesh
+		difficulty = 1, -- Normal
+		shortName = "AA (NHC)"
+	},
 	--TODO FIX THESE ↑
 	[1157] = {
 		id = 14032, -- Academy
-		difficulty = 1, -- Normal
-		shortName = "AA (NHC)"
+		difficulty = 2, -- Heroic
+		shortName = "TV (HC)"
 	},
 	[1158] = {
 		id = 14032, -- Academy
@@ -365,6 +385,11 @@ GFIO.DUNGEONS = {
 		difficulty = 4, -- Mythic + 
 		shortName = "PSF (M+)"
 	},
+	[1512] = {
+		id = 15093, -- Priory of the Sacred Flame
+		difficulty = 3, -- Mythic
+		shortName = "PSF (M)"
+	},
 	[1285] = {
 		id = 14971, -- The Dawnbreaker
 		difficulty = 4, -- Mythic + 
@@ -464,6 +489,26 @@ GFIO.DUNGEONS = {
 		id = 15452, -- Operation Floodgate
 		difficulty = 4, -- M+ 
 		shortName = "FLOOD (M+)"
+	},
+	[1707] = {
+		id = 16104, -- Eco-Dome Al'dani
+		difficulty = 1, -- M 
+		shortName = "EDA (NHC)"
+	},
+	[1708] = {
+		id = 16104, -- Eco-Dome Al'dani
+		difficulty = 2, -- M 
+		shortName = "EDA (HC)"
+	},
+	[1709] = {
+		id = 16104, -- Eco-Dome Al'dani
+		difficulty = 3, -- M 
+		shortName = "EDA (M)"
+	},
+	[1710] = {
+		id = 16104, -- Eco-Dome Al'dani
+		difficulty = 4, -- M+ 
+		shortName = "EDA (M+)"
 	},
 	--TODO FIX THESE ↑
 }

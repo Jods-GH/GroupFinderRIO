@@ -106,7 +106,9 @@ local function getScoreForLeader(searchResult)
     local shortLanguage  = ""
     if leaderFullName then
         local realm = leaderFullName:match("-(.+)") or GetNormalizedRealmName()
-        local language = realm and GFIO.REALMS[realm] or ""
+        assert(realm, "No realm found for player: "..leaderFullName)
+        local language = realm and GFIO.REALMS[realm]
+        assert(language, "No language found for realm: "..realm)
         shortLanguage = GFIO.LANGUAGES[language] or ""
     end
 
@@ -145,7 +147,9 @@ local function getProgressForLeader(searchResult)
     local shortLanguage  = ""
     if leaderFullName then
         local realm = leaderFullName:match("-(.+)") or GetNormalizedRealmName()
-        local language = realm and GFIO.REALMS[realm] or ""
+        assert(realm, "No realm found for player: "..leaderFullName)    
+        local language = realm and GFIO.REALMS[realm]
+        assert(language, "No language found for realm: "..realm)
         shortLanguage = GFIO.LANGUAGES[language] or ""
     end
     if RaiderIO and RaiderIO.GetProfile(leaderFullName,faction) then
@@ -656,7 +660,9 @@ local function getApplicantInfoForKeys(applicantID, numMember)
     local shortLanguage  = ""
     if name then
         local realm = name:match("-(.+)") or GetNormalizedRealmName()
-        local language = realm and realm ~= "" and GFIO.REALMS[realm] or ""
+        assert(realm, "No realm found for player: "..name)    
+        local language = GFIO.REALMS[realm]
+        assert(language, "No language found for realm: "..realm)
         shortLanguage = language and GFIO.LANGUAGES[language] or ""
     end
     if RaiderIO and RaiderIO.GetProfile(name,factionGroup) then
@@ -690,8 +696,10 @@ local function getApplicantInfoForRaid(applicantID, numMember, entryData)
     local shortLanguage  = ""
     if name then
         local realm = name:match("-(.+)") or GetNormalizedRealmName()
-        local language = realm and GFIO.REALMS[realm] or ""
-        shortLanguage = GFIO.LANGUAGES[language] or ""
+        assert(realm, "No realm found for player: "..name)
+        local language = realm and GFIO.REALMS[realm]
+        assert(language, "No language found for realm: "..realm)
+        shortLanguage = language and GFIO.LANGUAGES[language] or ""
     end
     for _,activityID in pairs (entryData.activityIDs) do
        
