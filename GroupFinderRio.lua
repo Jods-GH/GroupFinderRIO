@@ -518,14 +518,14 @@ local function compareSearchEntriesRaid(a,b)
         return false
     end
 
-    if GFIO.db.profile.debugMode then -- use this to gather raid ids for the raidlist
-        assert(GFIO.RAIDS[searchResultA.activityID], "No Raid Data for ID: "..searchResultA.activityID)
-        assert(GFIO.RAIDS[searchResultB.activityID], "No Raid Data for ID: "..searchResultB.activityID)
-        assert(GFIO.ACTIVITY_ORDER[searchResultA.activityID] , "Activity ID has no order: "..searchResultA.activityID)
-        assert(GFIO.ACTIVITY_ORDER[searchResultB.activityID] , "Activity ID has no order: "..searchResultB.activityID)
-    end
     for _, activityIDA in pairs(searchResultA.activityIDs) do
         for _, activityIDB in pairs(searchResultB.activityIDs) do
+            if GFIO.db.profile.debugMode then -- use this to gather raid ids for the raidlist
+                assert(GFIO.RAIDS[activityIDA], "No Raid Data for ID: "..activityIDA)
+                assert(GFIO.RAIDS[activityIDB], "No Raid Data for ID: "..activityIDB)
+                assert(GFIO.ACTIVITY_ORDER[activityIDA] , "Activity ID has no order: "..activityIDA)
+                assert(GFIO.ACTIVITY_ORDER[activityIDB] , "Activity ID has no order: "..activityIDB)
+            end
             if not GFIO.ACTIVITY_ORDER[activityIDA] or not GFIO.ACTIVITY_ORDER[activityIDB] 
                 or not GFIO.RAIDS[activityIDA] or not GFIO.RAIDS[activityIDB] then
                 return activityIDA > activityIDB
