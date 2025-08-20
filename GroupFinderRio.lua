@@ -139,7 +139,7 @@ local function getProgressForLeader(searchResult)
             raidZone = GFIO.RAIDS[activityID]
         end
     end
-    if not leaderName or searchResult.isDelisted or not raidZone or raidZone == {} then 
+    if not leaderName or searchResult.isDelisted or not raidZone or raidZone == {} or leaderName:find("-")==nil and not GetNormalizedRealmName() then 
         return nil, nil, nil, nil, nil
     end
     local leaderFullName = leaderName:find("-")~=nil and leaderName or leaderName.."-"..GetNormalizedRealmName()
