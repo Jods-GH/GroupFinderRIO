@@ -907,6 +907,8 @@ local function compareApplicantsRaid(a,b)
         return not specIDsB
     end
     if avgDifficultyA ~= avgDifficultyB then
+        assert(tonumber(avgDifficultyA), "GroupFinderRio: avgDifficultyA is not a number: "+ avgDifficultyA)
+        assert(tonumber(avgDifficultyB), "GroupFinderRio: avgDifficultyB is not a number: "+ avgDifficultyB)
         return GFIO.sortFunc(avgDifficultyA, avgDifficultyB)
     end
     if avgKilledBossesA == avgKilledBossesB then
