@@ -26,7 +26,7 @@ end
 ---@return boolean
 GFIO.sortFunc = function(a,b)
     if not a or not b then
-        return a
+        return a and true or false
     end
     if GFIO.db.profile.sortAscending then
         return a < b
