@@ -907,17 +907,17 @@ local function compareApplicantsRaid(a,b)
         return not specIDsB
     end
     if avgDifficultyA ~= avgDifficultyB then
-        assert(tonumber(avgDifficultyA), "GroupFinderRio: avgDifficultyA is not a number: "+ avgDifficultyA)
-        assert(tonumber(avgDifficultyB), "GroupFinderRio: avgDifficultyB is not a number: "+ avgDifficultyB)
-        return GFIO.sortFunc(avgDifficultyA, avgDifficultyB)
+        assert(tonumber(avgDifficultyA), "GroupFinderRio: avgDifficultyA is not a number: ".. avgDifficultyA)
+        assert(tonumber(avgDifficultyB), "GroupFinderRio: avgDifficultyB is not a number: ".. avgDifficultyB)
+        return GFIO.sortFunc(tonumber(avgDifficultyA), tonumber(avgDifficultyB))
     end
     if avgKilledBossesA == avgKilledBossesB then
         if ilvlA == ilvlB then
-            return GFIO.sortFunc(a,b)
+            return GFIO.sortFunc(tonumber(a), tonumber(b))
         end
-        return GFIO.sortFunc(ilvlA,ilvlB)
+        return GFIO.sortFunc(tonumber(ilvlA), tonumber(ilvlB))
     end
-    return GFIO.sortFunc(avgKilledBossesA,avgKilledBossesB) 
+    return GFIO.sortFunc(tonumber(avgKilledBossesA), tonumber(avgKilledBossesB))
 end
 ---comment hooked to the sortApplicants function to calls compareApplicants to sort the applicants
 ---@param applicants table
