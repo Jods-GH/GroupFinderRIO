@@ -12,6 +12,7 @@ function GroupFinderRIO:OnInitialize()
 	-- Called when the addon is loaded
     self:Print(GFIO.getLocalisation("AccessOptionsMessage"))
     self:RegisterEvent("LFG_LIST_APPLICANT_UPDATED")
+    self:RegisterEvent("PLAYER_LOGIN")
     GFIO.self = self
     GFIO.db = LibStub("AceDB-3.0"):New("GroupFinderRIO",GFIO.OptionDefaults, true) -- Generates Saved Variables with default Values (if they don't already exist)
 
@@ -50,12 +51,19 @@ end
 function GroupFinderRIO:SlashCommand(msg) -- called when slash command is used
     if msg == "version" then
         print(GFIO.AddonVersion)
+    elseif msg == "realm" then
+        print(GFIO.PLAYER_NORMALIZED_REALM)
     elseif msg == "classFrame" then
         GFIO.createOrShowSpecSelectFrame()
     else
         GFIO.CreateOptionsFrame() 
     end
 end
+
+function GroupFinderRIO:PLAYER_LOGIN()
+    GFIO.PLAYER_NORMALIZED_REALM = GetNormalizedRealmName()
+end
+
 local APPLICATION_CANCELED = "cancelled"
 local APPLICATION_TIMEDOUT = "timedout"
 local APPLICATION_INVITED = "inviteaccepted"
