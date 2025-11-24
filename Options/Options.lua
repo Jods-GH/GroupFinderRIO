@@ -49,6 +49,38 @@ GFIO.options = {
             return  GFIO.db.profile.addHighestDifficulty --Sets value of toggles depending on SavedVariables 
         end,
       },
+    hideDeclinedGroups = {
+      name = "Hide Declined Groups",
+      desc = "Hide groups that have declined your application from search results",
+      order = 31,
+      width = "full",
+      type = "toggle",
+      set = function(info,val)  
+        GFIO.db.profile.hideDeclinedGroups = val
+        if LFGListFrame.SearchPanel:IsShown() then
+          LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel)
+        end
+      end,
+      get = function(info)
+          return  GFIO.db.profile.hideDeclinedGroups
+      end,
+    },
+    hideCanceledGroups = {
+      name = "Hide Canceled Groups",
+      desc = "Hide groups that you have canceled your application to from search results",
+      order = 32,
+      width = "full",
+      type = "toggle",
+      set = function(info,val)  
+        GFIO.db.profile.hideCanceledGroups = val
+        if LFGListFrame.SearchPanel:IsShown() then
+          LFGListSearchPanel_UpdateResultList(LFGListFrame.SearchPanel)
+        end
+      end,
+      get = function(info)
+          return  GFIO.db.profile.hideCanceledGroups
+      end,
+    },
       
       applicantView = {
         name = GFIO.getLocalisation("applicantView"),

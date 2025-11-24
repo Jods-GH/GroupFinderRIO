@@ -228,6 +228,40 @@ local function colorScore(score)
     return coloredScore
 
 end
+local function filterDeclinedGroups(results)
+    if not GFIO.db.profile.hideDeclinedGroups and not GFIO.db.profile.hideCanceledGroups then
+        return results
+    end
+    
+    local filteredResults = {}
+    local declinedCount = 0
+    local canceledCount = 0
+    
+    for i, resultID in ipairs(results) do
+        local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID)
+        local shouldFilter = false
+        
+        if searchResultInfo then
+            if GFIO.db.profile.hideDeclinedGroups and GFIO.IsDeclinedGroup(searchResultInfo) then
+                shouldFilter = true
+                declinedCount = declinedCount + 1
+            elseif GFIO.db.profile.hideCanceledGroups and GFIO.IsCanceledGroup(searchResultInfo) then
+                shouldFilter = true
+                canceledCount = canceledCount + 1
+            end
+        end
+        
+        if not shouldFilter then
+            table.insert(filteredResults, resultID)
+        end
+    end
+    
+    if GFIO.db.profile.debugMode and (declinedCount > 0 or canceledCount > 0) then
+        print(string.format("GFIO: Filtered %d declined and %d canceled groups", declinedCount, canceledCount))
+    end
+    
+    return filteredResults
+end
 ---comment helper to adjust group titles for mplus
 ---@param searchResult LfgSearchResultData
 ---@param entry table
@@ -587,40 +621,51 @@ end
 ---comment hooked to the sortSearchResults function to calls compareSearchEntries to sort the search results
 ---@param entry any
 local function sortSearchResults(entry)
-    if not PVEFrame:IsShown() or not LFGListFrame.SearchPanel:IsShown()or not GFIO.db.profile.sortGroupsByScore then
+    if not PVEFrame:IsShown() or not LFGListFrame.SearchPanel:IsShown() then
         return
     end
-    if not entry.categoryID then -- we are in PGF sorting
+    
+    local needsFiltering = GFIO.db.profile.hideDeclinedGroups or GFIO.db.profile.hideCanceledGroups
+    local needsSorting = GFIO.db.profile.sortGroupsByScore
+    
+    if not needsFiltering and not needsSorting then
+        return
+    end
+    
+    if not entry.categoryID then
         local results = CopyTable(entry)
-        if LFGListFrame.CategorySelection.selectedCategory == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
-            table.sort(results, compareSearchEntriesMplus) 
-        elseif LFGListFrame.CategorySelection.selectedCategory == GROUP_FINDER_CATEGORY_ID_RAIDS then
-            table.sort(results, compareSearchEntriesRaid)
+        
+        if needsFiltering then
+            results = filterDeclinedGroups(results)
+        end
+        
+        if needsSorting then
+            if LFGListFrame.CategorySelection.selectedCategory == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
+                table.sort(results, compareSearchEntriesMplus) 
+            elseif LFGListFrame.CategorySelection.selectedCategory == GROUP_FINDER_CATEGORY_ID_RAIDS then
+                table.sort(results, compareSearchEntriesRaid)
+            end
         end
         return
     end
+    
     local results = CopyTable(entry.results)
-    if entry.categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
-        table.sort(results, compareSearchEntriesMplus) 
-    elseif entry.categoryID == GROUP_FINDER_CATEGORY_ID_RAIDS then
-        table.sort(results, compareSearchEntriesRaid)
+    
+    if needsFiltering then
+        results = filterDeclinedGroups(results)
     end
-    -- publish
+    
+    if needsSorting then
+        if entry.categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then
+            table.sort(results, compareSearchEntriesMplus) 
+        elseif entry.categoryID == GROUP_FINDER_CATEGORY_ID_RAIDS then
+            table.sort(results, compareSearchEntriesRaid)
+        end
+    end
+    
     LFGListFrame.SearchPanel.results = results
     LFGListFrame.SearchPanel.totalResults = #results
     LFGListSearchPanel_UpdateResults(LFGListFrame.SearchPanel)
-    --[[
-    local dataProvider = CreateDataProvider();
-    local results = self.results;
-    for index = 1, #results.results do
-        dataProvider:Insert({resultID=results.results[index]});
-    end
-    LFGListFrame.SearchPanel.results = results.results
-    LFGListFrame.SearchPanel.totalResults = #results.results
-    LFGListFrame.SearchPanel.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
-    LFGListFrame.SearchPanel.ScrollBox:Update()
-    DevTool:AddData(LFGListFrame.SearchPanel,"searchpanel")
-    ]]
 end
 
 ---comment helper to get the timed keys from a RaiderIo profile
@@ -1177,6 +1222,25 @@ end
     end
  end)
 
+ local function onSearchResultsUpdated()
+    if not LFGListFrame.SearchPanel:IsShown() then
+        return
+    end
+    
+    local needsFiltering = GFIO.db.profile.hideDeclinedGroups or GFIO.db.profile.hideCanceledGroups
+    local hasSorting = GFIO.db.profile.sortGroupsByScore
+    
+    if needsFiltering and not hasSorting then
+        local results = LFGListFrame.SearchPanel.results
+        if results and #results > 0 then
+            local filteredResults = filterDeclinedGroups(results)
+            LFGListFrame.SearchPanel.results = filteredResults
+            LFGListFrame.SearchPanel.totalResults = #filteredResults
+            LFGListSearchPanel_UpdateResults(LFGListFrame.SearchPanel)
+        end
+    end
+end
+
 --hooksecurefunc("LFGListSearchPanel_UpdateResults",sortSearchResults); -- This reorders to often so we don't do it
 if PremadeGroupsFilter and PremadeGroupsFilter.OverwriteSortSearchResults then
     PremadeGroupsFilter.OverwriteSortSearchResults(addonName, sortSearchResults)
@@ -1187,4 +1251,5 @@ end
 hooksecurefunc("LFGListSearchEntry_Update", updateLfgListEntry);
 hooksecurefunc("LFGListUtil_SortApplicants", sortApplications);
 hooksecurefunc("LFGListApplicationViewer_UpdateApplicantMember", updateApplicationListEntry);
+hooksecurefunc("LFGListSearchPanel_UpdateResultList", onSearchResultsUpdated)
 
