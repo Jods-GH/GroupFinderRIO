@@ -46,6 +46,14 @@ jobs:
         id: readChanglog
         with:
           path: CHANGELOG.md
+
+      - name: Upload localizations
+        uses: p3lim/curseforge-localizations@v1
+        with:
+          handle_missing: DeletePhrase 
+          exclude: 
+            Libs/*
+            Data/*
    
       # once cloned, we just run the GitHub Action for the packager project
       - name: Package and release
