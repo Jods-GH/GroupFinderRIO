@@ -698,6 +698,7 @@ GFIO.LANGUAGES = {
     ["brazilian"] = "BR",
     ["oceanic"] = "OCE",
 	["korean"] = "KR",
+	["beta"] = "BETA",
 }
 setmetatable(GFIO.LANGUAGES, {
     __index = function(_, key)
@@ -711,6 +712,10 @@ elseif GetCurrentRegion() == 1 then
     GFIO.REALMS = REGION_REALMS_US
 elseif GetCurrentRegion() == 2 then
     GFIO.REALMS = REGION_REALMS_KR
+elseif GetCurrentRegion() == 90 then --beta
+    GFIO.REALMS = {
+		["Xal'atath'sEndgame"] = "beta",
+	}
 end
 setmetatable(GFIO.REALMS, {
     __index = function(_, key)
