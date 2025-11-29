@@ -105,7 +105,7 @@ GFIO.DUNGEONS = {
 	},
 	[182] = {
 		id = 6988, -- Skyreach
-		difficulty = 4, -- Heroic
+		difficulty = 4, -- Mythic plus
 		shortName = "SR (M+)"
 	},
 	[486] = {
