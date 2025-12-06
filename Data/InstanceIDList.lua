@@ -103,10 +103,21 @@ GFIO.DUNGEONS = {
 		difficulty = 2, -- Heroic
 		shortName = "GB (HC)"
 	},
+	[404] = {
+		id = 6988, -- Skyreach
+		difficulty = 3, -- Mythic
+		shortName = "SR (M)"
+	},
 	[182] = {
 		id = 6988, -- Skyreach
 		difficulty = 4, -- Mythic plus
 		shortName = "SR (M+)"
+	},
+	
+	[485] = {
+		id = 8910, -- Seat of the Triumvirate
+		difficulty = 3, -- Mythic plus
+		shortName = "SEAT (M)"
 	},
 	[486] = {
 		id = 8910, -- Seat of the Triumvirate
