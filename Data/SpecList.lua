@@ -164,6 +164,10 @@ GFIO.SpecList = {
             icon =5198700, -- augmentation	
             order = 13
         },	
+        [1480] = {
+            icon = 7455385, -- devourer
+            order = 14
+        },	
     },
 
     
