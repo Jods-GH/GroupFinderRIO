@@ -64,6 +64,7 @@ GFIO.OptionDefaults = {
 			[1467] = true, -- devestation
 			[1468] = true, -- preservation
 			[1473] = true, -- augmentation	
+			[1480] = true, -- devourer	
 		}
 	}
 }

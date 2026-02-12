@@ -167,7 +167,7 @@ GFIO.SpecList = {
         [1480] = {
             icon = 7455385, -- devourer
             order = 14
-        },	
+        }
     },
 
     
