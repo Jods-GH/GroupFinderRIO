@@ -69,8 +69,9 @@ local APPLICATION_TIMEDOUT = "timedout"
 local APPLICATION_INVITED = "inviteaccepted"
 local APPLICATION_INVITE_DECLINED = "invitedeclined"
 function GroupFinderRIO:LFG_LIST_APPLICANT_UPDATED(event, applicantID)
-    if event == "LFG_LIST_APPLICANT_UPDATED" then
+    if event == "LFG_LIST_APPLICANT_UPDATED" and not issecretvalue(applicantID) then
         local applicantInfo = C_LFGList.GetApplicantInfo(applicantID)
+        if issecretvalue(applicantInfo) then return end
         if not applicantInfo or applicantInfo.applicationStatus == APPLICATION_CANCELED 
             or applicantInfo.applicationStatus == APPLICATION_TIMEDOUT or applicantInfo.applicationStatus == APPLICATION_INVITED 
             or applicantInfo.applicationStatus == APPLICATION_INVITE_DECLINED then
