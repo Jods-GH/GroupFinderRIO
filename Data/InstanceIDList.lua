@@ -93,6 +93,36 @@ GFIO.RAIDS = {
 		difficulty = 3, -- mythic
 		shortName = "MFO (M)"
 	},
+	[1772] = {
+		id = 16340, -- voidspire
+		difficulty = 1, -- normal
+		shortName = "VS (NHC)"
+	},
+	[1773] = {
+		id = 16340, -- voidspire
+		difficulty = 2, -- heroic
+		shortName = "VS (HC)"
+	},
+	[1774] = {
+		id = 16340, -- voidspire
+		difficulty = 3, -- mythic
+		shortName = "VS (M)"
+	},
+	[1778] = {
+		id = 16178, -- dreamrift
+		difficulty = 1, -- normal
+		shortName = "DR (NHC)"
+	},
+	[1779] = {
+		id = 16178, -- dreamrift
+		difficulty = 2, -- heroic
+		shortName = "DR (HC)"
+	},
+	[1780] = {
+		id = 16178, -- dreamrift
+		difficulty = 3, -- mythic
+		shortName = "DR (M)"
+	},
 
 }
 
@@ -566,10 +596,47 @@ GFIO.DUNGEONS = {
 		difficulty = 4, -- Mythic plus
 		shortName = "POS (M+)"
 	},
+	[1762] = {
+		id = 16395, -- Maisara Caverns
+		difficulty = 2, -- Heroic
+		shortName = "MC (HC)"
+	},
+	[1763] = {
+		id = 16395, -- Maisara Caverns
+		difficulty = 3, -- Mythic 
+		shortName = "MC (M)"
+	},
+	[1541] = {
+		id = 15808, -- Windrunner Spire
+		difficulty = 3, -- Mythic 
+		shortName = "WS (M)"
+	},
+	[1758] = {
+		id = 15829, -- Magisters' Terrace
+		difficulty = 2, -- Mythic 
+		shortName = "MT (HC)"
+	},
+	[1759] = {
+		id = 15829, -- Magisters' Terrace
+		difficulty = 3, -- Mythic 
+		shortName = "MT (M)"
+	},
+	[1767] = {
+		id = 16573, -- Nexus-Point Xenas
+		difficulty = 3, -- Mythic 
+		shortName = "NPX (M)"
+	},
 	--TODO FIX THESE ↑
 }
 
 GFIO.ACTIVITY_ORDER = {
+	[1780] = 12060, -- Dreamrift mythic
+	[1779] = 12050, -- Dreamrift heroic
+	[1778] = 12040, -- Dreamrift normal
+	[1774] = 12030, -- Voidspire mythic
+	[1773] = 12020, -- Voidspire heroic
+	[1772] = 12010, -- Voidspire normal
+	[1735] = 12000, -- Worldboss Midnight (order is Majorpatch in front so 12000 for 12.0)
 	[1619] = 11230, -- Manaforge Omega mythic
 	[1618] = 11220, -- Manaforge Omega heroic
 	[1617] = 11210, -- Manaforge Omega normal
