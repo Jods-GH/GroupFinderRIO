@@ -1064,7 +1064,7 @@ local function updateApplicationForDungeons(member, appID, memberIdx)
     ratingInfoFrame.Rating:Show()
     ratingInfoFrame.Rating:SetPoint("LEFT",member.Rating,"LEFT")
     member.Rating:Hide()
-    if GFIO.db.profile.showNote and applicantInfo.comment and applicantInfo.comment~="" then
+    if GFIO.db.profile.showNote and applicantInfo.comment and not issecretvalue(applicantInfo.comment) and applicantInfo.comment~="" then
         ratingInfoFrame.Note:Show()
         ratingInfoFrame.Note:SetPoint("RIGHT",member.RoleIcon1,"LEFT",-2,0)
     else
@@ -1131,7 +1131,7 @@ local function updateApplicationForRaids(member, appID, memberIdx)
     ratingInfoFrame:SetPoint("RIGHT",member.RoleIcon1,"LEFT",-10,0)
     ratingInfoFrame.Rating:Hide()
 
-    if GFIO.db.profile.showNote and applicantInfo.comment and applicantInfo.comment~="" then
+    if GFIO.db.profile.showNote and applicantInfo.comment and not issecretvalue(applicantInfo.comment) and applicantInfo.comment~="" then
         ratingInfoFrame.Note:Show()
         ratingInfoFrame.Note:SetPoint("RIGHT",member.RoleIcon1,"LEFT",-2,0)
     else
