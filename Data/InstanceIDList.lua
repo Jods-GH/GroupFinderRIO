@@ -108,18 +108,33 @@ GFIO.RAIDS = {
 		difficulty = 3, -- mythic
 		shortName = "VS (M)"
 	},
+	[1775] = {
+		id = 16340, -- March of Queldanas
+		difficulty = 1, -- normal
+		shortName = "MQD (NHC)"
+	},
+	[1776] = {
+		id = 16340, -- March of Queldanas
+		difficulty = 2, -- normal
+		shortName = "MQD (HC)"
+	},
+	[1777] = {
+		id = 16340, -- March of Queldanas
+		difficulty = 3, -- mythic
+		shortName = "MQD (M)"
+	},
 	[1778] = {
-		id = 16178, -- dreamrift
+		id = 16340, -- dreamrift
 		difficulty = 1, -- normal
 		shortName = "DR (NHC)"
 	},
 	[1779] = {
-		id = 16178, -- dreamrift
+		id = 16340, -- dreamrift
 		difficulty = 2, -- heroic
 		shortName = "DR (HC)"
 	},
 	[1780] = {
-		id = 16178, -- dreamrift
+		id = 16340, -- dreamrift
 		difficulty = 3, -- mythic
 		shortName = "DR (M)"
 	},
@@ -630,6 +645,9 @@ GFIO.DUNGEONS = {
 }
 
 GFIO.ACTIVITY_ORDER = {
+	[1777] = 12060, -- March of Queldanas mythic
+	[1776] = 12050, -- March of Queldanas heroic
+	[1775] = 12040, -- March of Queldanas normal
 	[1780] = 12060, -- Dreamrift mythic
 	[1779] = 12050, -- Dreamrift heroic
 	[1778] = 12040, -- Dreamrift normal
