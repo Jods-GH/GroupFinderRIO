@@ -664,7 +664,7 @@ local function getApplicantInfoForKeys(applicantID, numMember)
     itemLevel = itemLevel or 0
     local shortLanguage  = ""
     if name then
-        local realm = name:match("-(.+)") or GetNormalizedRealmName()
+        local realm = name:match("-(.+)") or GetNormalizedRealmName() or GFIO.PLAYER_NORMALIZED_REALM
         assert(realm, "No realm found for player: "..name)    
         local language = GFIO.REALMS[realm]
         assert(language, "No language found for realm: "..realm)
