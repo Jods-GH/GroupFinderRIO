@@ -1,0 +1,42 @@
+name: Update Instance ID list
+
+on:
+  schedule:
+    - cron: 0 6 * * 3 # weekly, Wednesday 06:00 UTC (after weekly reset)
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone project
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Regenerate Data/InstanceIDList.lua
+        run: python .github/scripts/generate_instance_list.py
+
+      - name: Validate Lua syntax
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lua5.1
+          luac5.1 -p Data/InstanceIDList.lua
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: 'chore: update instance id list from raider.io/wago'
+          commit-message: 'chore: update instance id list from raider.io/wago'
+          body: |
+            Automated regeneration of `Data/InstanceIDList.lua` from raider.io static
+            data + wago.tools DB2 exports.
+
+            Please review, in particular:
+            - Auto-derived `shortName` for **new** dungeons/raids (existing ones are kept).
+            - Combined-tier raid grouping and `ACTIVITY_ORDER` values.
+          branch: instance-id-list
+          delete-branch: true
