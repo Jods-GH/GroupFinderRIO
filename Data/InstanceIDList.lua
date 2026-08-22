@@ -1553,6 +1553,7 @@ GFIO.ACTIVITY_ORDER = {
 	-- END AUTO-GENERATED --
 
 	-- Manually maintained (world bosses / legacy) --
+	[1968] = 12100, -- Worldboss Midnight Heroic
 	[1735] = 12000, -- Worldboss Midnight (order is Majorpatch in front so 12000 for 12.0)
 	[1289] = 11000, -- Worldboss TheWarWithin (order is Majorpatch in front so 11000 for 11.0)
 	[1253] = 10230, -- Amidrassil mythic
