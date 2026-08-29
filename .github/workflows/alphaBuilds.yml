@@ -8,7 +8,7 @@ name: Alpha builds
 on:
   push:
     branches:
-      - master
+      - main
     tags-ignore:
       - '**'
     paths-ignore:
