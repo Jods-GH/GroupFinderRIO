@@ -20,6 +20,21 @@ GFIO.RAIDS = {
 		difficulty = 1,
 		shortName = "TG (NHC)"
 	},
+	[1977] = {
+		id = 17059, -- The Unbinding of Kith'ix
+		difficulty = 3,
+		shortName = "UKI (M)"
+	},
+	[1976] = {
+		id = 17059, -- The Unbinding of Kith'ix
+		difficulty = 2,
+		shortName = "UKI (HC)"
+	},
+	[1975] = {
+		id = 17059, -- The Unbinding of Kith'ix
+		difficulty = 1,
+		shortName = "UKI (NHC)"
+	},
 	[1957] = {
 		id = 16915, -- The Venomous Abyss
 		difficulty = 3,
@@ -1521,6 +1536,9 @@ GFIO.DUNGEONS = {
 GFIO.ACTIVITY_ORDER = {
 
 	-- BEGIN AUTO-GENERATED (raider.io + wago.tools) --
+	[1977] = 12630, -- The Unbinding of Kith'ix mythic
+	[1976] = 12620, -- The Unbinding of Kith'ix heroic
+	[1975] = 12610, -- The Unbinding of Kith'ix normal
 	[1957] = 12530, -- The Venomous Abyss mythic
 	[1956] = 12520, -- The Venomous Abyss heroic
 	[1955] = 12510, -- The Venomous Abyss normal
