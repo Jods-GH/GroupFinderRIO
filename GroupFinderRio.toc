@@ -8,7 +8,7 @@
 ## X-Wago-ID: 56n9wjN9
 ## OptionalDeps: Ace3, CustomNames, RaiderIO, PremadeGroupsFilter, ArchonTooltip
 ## AddonCompartmentFunc: GroupFinderRIO_AddonCompartmentFunction
-## IconTexture: Interface\AddOns\GroupFinderRio\Files\GroupFinderRio.tga
+## IconTexture: Interface\AddOns\GroupFinderRio\Media\Logo.tga
 ## Category-enUS: Dungeons & Raids
 ## Category-deDE: Dungeons & Schlachtzüge
 ## Category-esES: Mazmorras y bandas

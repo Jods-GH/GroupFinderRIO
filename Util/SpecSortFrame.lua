@@ -62,7 +62,7 @@ local function createMainFrame()
     frame.Bg.colorTexture = {r, g, b, 0.8}
     frame:SetFrameStrata("DIALOG")
     --frame:SetPortraitShown(false)
-    frame:SetPortraitTextureRaw("Interface\\AddOns\\GroupFinderRio\\Files\\GroupFinderRio.tga")
+    frame:SetPortraitTextureRaw("Interface\\AddOns\\GroupFinderRio\\Media\\Logo.tga")
     --frame:SetBackdrop(PaneBackdrop)
     if not LFGListFrame.ApplicationViewer:IsShown() then
         frame:Hide()
