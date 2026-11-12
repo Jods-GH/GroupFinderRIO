@@ -35,7 +35,7 @@ end
 ---@return bossData? maindata
 local function getProgressForRioProfile(profile, instanceID, activeDifficulty)
     if GFIO.db.profile.debugMode and DevTool then
-        DevTool:AddData(profile,"Profile")
+        DevTool:AddData(profile, profile.name .. "-".. profile.realm)
     end
     if not profile.raidProfile or not profile.raidProfile.raidProgress then
         return 0, nil, nil
