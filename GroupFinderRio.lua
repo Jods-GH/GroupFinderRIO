@@ -1031,6 +1031,9 @@ local function sortApplications(applicants)
         return
     end
     local entryData = C_LFGList.GetActiveEntryInfo()
+    if not entryData or issecretvalue(entryData.censored) then
+        return
+    end
     for _, activityID in pairs(entryData.activityIDs) do
         local activityInfoTable= C_LFGList.GetActivityInfoTable(activityID)
         if activityInfoTable.categoryID == GROUP_FINDER_CATEGORY_ID_DUNGEONS then 
@@ -1258,10 +1261,13 @@ end
 ---@param appID number
 ---@param memberIdx number
 local function updateApplicationListEntry(member, appID, memberIdx)
-    if InCombatLockdown() or issecretvalue(appID) or issecretvalue(memberIdx) or issecretvalue(memberidx) then
+    if InCombatLockdown() or issecretvalue(appID) or issecretvalue(memberIdx) then
         return
     end
     local entryData = C_LFGList.GetActiveEntryInfo()
+    if not entryData or issecretvalue(entryData.censored) then
+        return
+    end
         for _,activityID in pairs (entryData.activityIDs) do
         local activityInfoTable= C_LFGList.GetActivityInfoTable(activityID)
         -- could maybe instead show something different we'll see
@@ -1273,6 +1279,17 @@ local function updateApplicationListEntry(member, appID, memberIdx)
             print("Category is neither raid not dungeon" .. activityInfoTable.categoryID)
         end
     end
+end
+
+local originalUpdateApplicationViewerInfo = LFGListApplicationViewer_UpdateInfo
+---comment replaces LFGListApplicationViewer_UpdateInfo since blizzard errors on secret values once sortApplications tainted the ApplicationViewer
+---@param self frame
+local function updateApplicationViewerInfo(self, ...)
+    local entryData = C_LFGList.GetActiveEntryInfo()
+    if entryData and (issecretvalue(entryData.censored) or issecretvalue(self.EntryName:GetWidth())) then
+        return
+    end
+    return originalUpdateApplicationViewerInfo(self, ...)
 end
 local runningTimer
 local function HandleSearchResultUpdated()
@@ -1305,4 +1322,5 @@ end
 hooksecurefunc("LFGListSearchEntry_Update", updateLfgListEntry);
 hooksecurefunc("LFGListUtil_SortApplicants", sortApplications);
 hooksecurefunc("LFGListApplicationViewer_UpdateApplicantMember", updateApplicationListEntry);
+LFGListApplicationViewer_UpdateInfo = updateApplicationViewerInfo
 
