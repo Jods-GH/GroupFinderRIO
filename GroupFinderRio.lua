@@ -4,29 +4,32 @@ local CustomNames = C_AddOns.IsAddOnLoaded("CustomNames") and LibStub and LibStu
 ---@param profile table
 ---@return integer? Mainscore
 ---@return integer currentScore
----@return boolean isMainRole
+---@return boolean? isMainRole
 local function getScoreForRioProfile(profile, assignedRole)
     if not profile.mythicKeystoneProfile then
         return nil, 0 
     end
-    if not GFIO.db.profile.useMainInfo then
-        return nil, profile.mythicKeystoneProfile.currentScore
+    local mainScore, isMainRole
+    if GFIO.db.profile.useMainInfo and (profile.mythicKeystoneProfile.mainCurrentScore and profile.mythicKeystoneProfile.mainCurrentScore>0) and profile.mythicKeystoneProfile.mainCurrentScore> profile.mythicKeystoneProfile.currentScore then
+        mainScore = profile.mythicKeystoneProfile.mainCurrentScore
     end
-    if (profile.mythicKeystoneProfile.mainCurrentScore and profile.mythicKeystoneProfile.mainCurrentScore>0) and profile.mythicKeystoneProfile.mainCurrentScore> profile.mythicKeystoneProfile.currentScore then
-        return profile.mythicKeystoneProfile.mainCurrentScore, profile.mythicKeystoneProfile.currentScore, true
-    end
-    if assignedRole and profile.mythicKeystoneProfile.mplusCurrent then
+    if (assignedRole == "TANK" or assignedRole == "DAMAGER" or assignedRole == "HEALER") and profile.mythicKeystoneProfile.mplusCurrent and profile.mythicKeystoneProfile.mplusCurrent.roles then
         for key,value in pairs(profile.mythicKeystoneProfile.mplusCurrent.roles) do
             if value[1] == "tank" and assignedRole == "TANK" and value[2] == "full" then
-                return nil, profile.mythicKeystoneProfile.currentScore, true
+                isMainRole = true
+                break
             elseif value[1] == "dps" and assignedRole == "DAMAGER" and value[2] == "full" then
-                return nil, profile.mythicKeystoneProfile.currentScore, true
+                isMainRole = true
+                break
             elseif value[1] == "healer" and assignedRole == "HEALER" and value[2] == "full" then
-                return nil, profile.mythicKeystoneProfile.currentScore, true
+                isMainRole = true
+                break
+            elseif (value[1] == "tank" or value[1] == "dps" or value[1] == "healer") and value[2] == "full" then
+                isMainRole = false
             end
         end
     end
-    return nil, profile.mythicKeystoneProfile.currentScore , false  
+    return mainScore, profile.mythicKeystoneProfile.currentScore, isMainRole
 end
 ---comment helper to get Progress from a RaiderIo profile
 ---@param profile table
@@ -730,7 +733,7 @@ end
 ---@return boolean tank
 ---@return boolean healer
 ---@return boolean damage
----@return boolean isMainRole
+---@return boolean? isMainRole
 ---@return number raceID
 ---@return table? timedKeystonesList
 ---@return boolean isLeaver
@@ -853,7 +856,7 @@ local function getScoreForApplication(applicationID)
         if specID and GFIO.db.profile.spec[specID] then
             specIDs = true
         end
-        if not isMainRole then
+        if isMainRole == false then
             everyoneIsMain = false
         end
     end 
@@ -1163,7 +1166,7 @@ local function updateApplicationForDungeons(member, appID, memberIdx)
     ratingInfoFrame:SetPoint("TOP",member,"TOP")
     ratingInfoFrame:SetPoint("RIGHT",member.RoleIcon1,"LEFT",-10,0)
     local textAddition = ""
-    if not isMainRole and GFIO.db.profile.useOfWrongRoleHighlight then
+    if isMainRole == false and GFIO.db.profile.useOfWrongRoleHighlight then
         textAddition  = "\124T135768:0\124t"
     end
     if mainScore then
